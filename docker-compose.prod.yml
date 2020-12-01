@@ -1,0 +1,5 @@
+version: "3"
+
+services:
+  server:
+    command: yarn run start
