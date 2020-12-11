@@ -1,1 +1,21 @@
-<p>login works!</p>
+<mat-card class="user-card">
+  <mat-card-header>
+    <mat-card-title>Login</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form (submit)="onSubmit()" [formGroup]="loginForm">
+      <span *ngIf="error" class="red err-mess">{{ error }}</span>
+      <mat-form-field class="field">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" name="username" />
+        <mat-error *ngIf="username?.errors?.required">User is required</mat-error>
+      </mat-form-field>
+      <mat-form-field class="field">
+        <mat-label>Password</mat-label>
+        <input matInput formControlName="password" name="password" />
+        <mat-error *ngIf="password?.errors?.required">Password is required</mat-error>
+      </mat-form-field>
+      <button class="user-btn" color="primary" mat-raised-button type="submit">LOGIN</button>
+    </form>
+  </mat-card-content>
+</mat-card>

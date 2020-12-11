@@ -1,13 +1,11 @@
 const { Router } = require("express");
 const router = Router();
 
-const {
-  sendJSON,
-  sendJSONError
-} = require("../json_messages")
+const { sendJSON, sendJSONError } = require("../json_messages");
 const {
   createObjOfSchema,
   cryptPassword,
+  formatErrors,
 } = require("../functions");
 const { getJWT, validateAuthorized } = require("../authorization");
 const Users = require("../../../models/Users");
@@ -32,6 +30,7 @@ router.get("/:id", async (req, res) => {
   const id = req.params.id;
   Users.findById(id, showOneField, (err, entry) => {
     if (err) {
+      res.status(400);
       res.json(sendJSONError(INCORRECT_ID));
       return;
     }
@@ -45,19 +44,32 @@ router.get("/:id", async (req, res) => {
 
 router.post("", (req, res) => {
   const newUser = createObjOfSchema(schemaFields, req);
-  newUser.password = cryptPassword(newUser.password);
-
   const user = new Users(newUser);
+
+  let err = user.validateSync();
+  const passwdErr = validatePassword(user.password);
+  if (passwdErr) {
+    if (passwdErr) {
+      if (!err) {
+        err = {
+          errors: {}
+        }
+      }
+      err.errors = { ...passwdErr, ...err.errors };
+    }
+  }
+  if (err) {
+    res.status(400);
+    res.json(sendJSONError(formatErrors(err)));
+    return;
+  }
+  user.password = cryptPassword(newUser?.password.toString());
 
   user.save((err, user) => {
     if (err) {
+      err = formatErrors(err);
       res.status(400);
-      const errors = err.errors;
-      const errorsFormatted = {};
-      for (let key in errors) {
-        errorsFormatted[key] = errors[key]?.kind;
-      }
-      res.json(sendJSONError(errorsFormatted));
+      res.json(sendJSONError(err));
       return;
     }
     res.status(201);
@@ -95,5 +107,17 @@ router.delete("/:id", (req, res) => {
     res.json(sendJSON(USER_DELETED));
   });
 });
+
+function validatePassword(pass) {
+  const minPasswordLength = 6;
+  const maxPasswordLength = 18;
+  if (pass < minPasswordLength || pass > maxPasswordLength) {
+    return {
+      password: {
+        kind: `Password must be minimum ${minPasswordLength} and maximum ${maxPasswordLength} length`,
+      },
+    };
+  }
+}
 
 module.exports = router;

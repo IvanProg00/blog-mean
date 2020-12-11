@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
 
 const { JWT_KEY} = require("../../config");
-const { sendJSONError } = require("./functions");
+const { sendJSONError } = require("./json_messages");
 const Users = require("../../models/Users");
+const { TOKEN_NOT_FOUND } = require("../../messages");
 
 module.exports = {
   getJWT: (userId) => jwt.sign({ userId }, JWT_KEY),
@@ -18,7 +19,7 @@ module.exports = {
     const user = await Users.findById(id);
 
     if (!user) {
-      res.json(sendJSONError("You aren't authorized."));
+      res.json(sendJSONError(TOKEN_NOT_FOUND));
       return;
     }
 

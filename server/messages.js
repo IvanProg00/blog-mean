@@ -17,4 +17,10 @@ module.exports = {
   ENTRY_CHANGED: "Entry Changed",
 
   SIGN_IN: "Logined",
+
+  TOKEN_NOT_FOUND: "User isn't registred",
+
+  UNIQUE_VALUES: {
+    username: "Username is unique"
+  }
 };

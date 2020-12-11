@@ -1,14 +1,23 @@
 <mat-toolbar [color]="mainColor">
   <span>Blog</span>
   <nav>
-    <button mat-button [routerLink]="['/']">All News</button>
-    <button mat-button [routerLink]="['/create']">Add News</button>
+    <button mat-button [routerLink]="['/']">All Entries</button>
+    <button *ngIf="isRegistred" mat-button [routerLink]="['/create']">Add Entries</button>
     <button mat-button [matMenuTriggerFor]="belowMenu">
       <mat-icon>person</mat-icon>
     </button>
     <mat-menu #belowMenu="matMenu" yPosition="below" xPosition="before">
-      <button mat-menu-item><mat-icon>login</mat-icon>Sign in</button>
-      <button mat-menu-item><mat-icon>account_circle</mat-icon>Sign up</button>
+      <ng-template [ngIf]="!isRegistred" [ngIfElse]="loading">
+        <button mat-menu-item [routerLink]="['/login']">
+          <mat-icon>login</mat-icon>Sign in
+        </button>
+        <button mat-menu-item [routerLink]="['/register']">
+          <mat-icon>account_circle</mat-icon>Sign up
+        </button>
+      </ng-template>
+      <ng-template #loading>
+        <button mat-menu-item (click)="logout()">Log out</button>
+      </ng-template>
     </mat-menu>
   </nav>
 </mat-toolbar>

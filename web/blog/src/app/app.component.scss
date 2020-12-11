@@ -3,9 +3,9 @@ div.main {
   display: grid;
   grid-template-rows: auto 1fr auto;
 
-  div.container {
+  .container {
     max-width: 1100px;
     width: 98%;
-    margin: 0 auto;
+    margin: 20px auto;
   }
 }

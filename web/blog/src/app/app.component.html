@@ -1,7 +1,11 @@
 <div class="main">
-  <app-header [mainColor]="mainColor"></app-header>
-  <div class="container">
+  <header>
+    <app-header [mainColor]="mainColor"></app-header>
+  </header>
+  <main class="container">
     <router-outlet></router-outlet>
-  </div>
-  <app-footer [mainColor]="mainColor"></app-footer>
+  </main>
+  <footer>
+    <app-footer [mainColor]="mainColor"></app-footer>
+  </footer>
 </div>

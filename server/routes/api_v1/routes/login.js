@@ -14,8 +14,8 @@ router.post("", async (req, res) => {
   };
 
   if (!(user?.username && user?.password)) {
+    res.status(400);
     res.json(sendJSONError("Username and Password are required"));
-    console.log(user);
     return;
   }
 
@@ -23,6 +23,7 @@ router.post("", async (req, res) => {
 
   const detectedUser = await Users.findOne(user, { _id: 1 });
   if (!detectedUser) {
+    res.status(400);
     res.json(sendJSONError(USER_NOT_FOUND));
     return;
   }

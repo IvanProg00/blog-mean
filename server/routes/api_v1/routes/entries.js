@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const router = Router();
 
-const { createObjOfSchema } = require("../functions");
+const { createObjOfSchema, findUserByToken } = require("../functions");
 const { sendJSON, sendJSONError } = require("../json_messages");
 const Entries = require("../../../models/Entries");
 const {
@@ -10,6 +10,7 @@ const {
   ENTRY_CHANGED,
   TAG_NOT_FOUND,
   TAG_DELETED,
+  ENTRY_NOT_FOUND,
 } = require("../../../messages");
 
 const schemaFields = ["title", "text"];
@@ -20,6 +21,7 @@ const showOneField = { __v: 0 };
 router.get("", async (_, res) => {
   const users = await Entries.find({}, showAllFields);
 
+  res.status(200);
   res.json(sendJSON(users));
 });
 
@@ -31,14 +33,20 @@ router.get("/:id", async (req, res) => {
       return;
     }
     if (entry) {
+      res.status(200);
       res.json(sendJSON(entry));
     } else {
-      res.json(sendJSONError("User not Fount"));
+      res.json(sendJSONError(ENTRY_NOT_FOUND));
     }
   });
 });
 
-router.post("", (req, res) => {
+router.post("", async (req, res) => {
+  const user = await findUserByToken(req.body?.token, res);
+  if (!user) {
+    return
+  }
+
   const newEntry = createObjOfSchema(
     [...schemaFields, ...schemaFieldsOnSave],
     req
@@ -62,7 +70,12 @@ router.post("", (req, res) => {
   });
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
+  const user = await findUserByToken(req.body?.token, res);
+  if (!user) {
+    return
+  }
+
   const updateEntry = createObjOfSchema(schemaFields, req);
 
   Entries.findByIdAndUpdate(id, { $set: updateEntry }, (err, entry) => {
@@ -74,7 +87,11 @@ router.put("/:id", (req, res) => {
   });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
+  const user = await findUserByToken(req.body?.token, res);
+  if (!user) {
+    return
+  }
   const id = req.params?.id;
 
   Entries.findByIdAndDelete(id, (err, entry) => {
