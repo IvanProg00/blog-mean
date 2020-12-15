@@ -1,5 +1,8 @@
-<ul>
+<ul *ngIf="entries.length > 0; else containsEntries">
   <li *ngFor="let item of entries">
     {{ item.title }}
   </li>
 </ul>
+<ng-template #containsEntries>
+  <h2 class="err-mess">No Entries</h2>
+</ng-template>

@@ -4,6 +4,9 @@ const router = Router();
 const { createObjOfSchema, findUserByToken } = require("../functions");
 const { sendJSON, sendJSONError } = require("../json_messages");
 const Entries = require("../../../models/Entries");
+const Users = require("../../../models/Users");
+const Tags = require("../../../models/Tags");
+
 const {
   INCORRECT_ID,
   ENTRY_CREATED,
@@ -11,29 +14,62 @@ const {
   TAG_NOT_FOUND,
   TAG_DELETED,
   ENTRY_NOT_FOUND,
+  USER_NOT_FOUND,
 } = require("../../../messages");
 
 const schemaFields = ["title", "text"];
 const schemaFieldsOnSave = ["usersId", "tagsId"];
 const showAllFields = { title: 1, usersId: 1, tagsId: 1 };
-const showOneField = { __v: 0 };
+const showEntriesFields = { __v: 0 };
+const showUserFields = { __v: 0, password: 0 };
+const showTagsField = { __v: 0 };
 
 router.get("", async (_, res) => {
-  const users = await Entries.find({}, showAllFields);
+  let isCorrect = true;
+  let entries = await Entries.find({}, showAllFields);
+
+  for (let i in entries) {
+    await Users.findById(entries[i].usersId, showUserFields, (err, user) => {
+      if (err) {
+        res.status(400);
+        res.json(sendJSONError(USER_NOT_FOUND));
+        isCorrect = false;
+        return;
+      }
+      entries[i].usersId = user;
+    });
+
+    await Tags.findById(entries[i].tagsId, showTagsField, (err, tag) => {
+      if (err) {
+        res.status(400);
+        res.json(sendJSONError(TAG_NOT_FOUND));
+        isCorrect = false;
+        return;
+      }
+      entries[i].tagsId = tag;
+    });
+
+    if (!entries) {
+      entries = [];
+      return;
+    }
+  }
 
   res.status(200);
-  res.json(sendJSON(users));
+  res.json(sendJSON(entries));
 });
 
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
-  Entries.findById(id, showOneField, (err, entry) => {
+  Entries.findById(id, showEntriesFields, (err, entry) => {
     if (err) {
       res.json(sendJSONError(INCORRECT_ID));
       return;
     }
+    Users.findById(entry.usersId, showEntriesFields);
     if (entry) {
       res.status(200);
+      console.log(entry);
       res.json(sendJSON(entry));
     } else {
       res.json(sendJSONError(ENTRY_NOT_FOUND));
@@ -42,15 +78,16 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("", async (req, res) => {
-  const user = await findUserByToken(req.body?.token, res);
+  const user = await findUserByToken(req.body?.usersId, res);
   if (!user) {
-    return
+    return;
   }
 
   const newEntry = createObjOfSchema(
     [...schemaFields, ...schemaFieldsOnSave],
     req
   );
+  newEntry.usersId = user._id;
 
   const entry = new Entries(newEntry);
 
@@ -73,7 +110,7 @@ router.post("", async (req, res) => {
 router.put("/:id", async (req, res) => {
   const user = await findUserByToken(req.body?.token, res);
   if (!user) {
-    return
+    return;
   }
 
   const updateEntry = createObjOfSchema(schemaFields, req);
@@ -90,7 +127,7 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   const user = await findUserByToken(req.body?.token, res);
   if (!user) {
-    return
+    return;
   }
   const id = req.params?.id;
 

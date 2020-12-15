@@ -19,6 +19,7 @@ services:
     # user: root
     # pwd: root
     container_name: db
+    restart: unless-stopped
     image: mongo:4.2
     volumes:
       - ./database/data:/data/db

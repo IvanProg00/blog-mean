@@ -42,7 +42,7 @@ module.exports = {
   async findUserByToken(token, res) {
     let user;
     if (token) {
-      user = await Users.findById(validateAuthorized(token, res));
+      user = await Users.findById(await validateAuthorized(token, res));
     }
     if (!user) {
       res.status(400);

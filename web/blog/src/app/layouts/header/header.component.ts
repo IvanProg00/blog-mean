@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from 'src/app/user/user.service';
 
@@ -10,7 +10,7 @@ import { UserService } from 'src/app/user/user.service';
 export class HeaderComponent implements OnInit {
   @Input() mainColor;
 
-  constructor(private userService: UserService) {}
+  constructor(private router: Router, private userService: UserService) {}
 
   ngOnInit(): void {
     this.isLogined();
@@ -31,5 +31,6 @@ export class HeaderComponent implements OnInit {
   public logout(): void {
     this.userService.dropToken();
     this.isLogined();
+    this.router.navigate(["/"]);
   }
 }

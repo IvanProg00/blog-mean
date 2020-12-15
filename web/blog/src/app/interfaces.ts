@@ -1,8 +1,21 @@
-export interface Entries {
+export interface Entrie {
   _id: string;
   title: string;
+  text: string;
   tagsId: string;
   usersId: string;
+}
+
+export interface AddEntrie {
+  title: string;
+  text: string;
+  tagsId: string;
+  usersId: string;
+}
+
+export interface Tag {
+  _id: string;
+  title: string;
 }
 
 export interface User {
