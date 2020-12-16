@@ -1,8 +1,31 @@
-<ul *ngIf="entries.length > 0; else containsEntries">
-  <li *ngFor="let item of entries">
-    {{ item.title }}
-  </li>
-</ul>
-<ng-template #containsEntries>
-  <h2 class="err-mess">No Entries</h2>
+<app-loading *ngIf="isLoading; else loaded"></app-loading>
+<ng-template #loaded>
+  <mat-grid-list
+    *ngIf="entries.length > 0; else containsEntries"
+    cols="3"
+    [gutterSize]="['10px']"
+  >
+    <mat-grid-tile *ngFor="let entry of entries">
+      <mat-card [style]="{ margin: '6px' }">
+        <mat-card-header>
+          <mat-card-title>{{ entry.title }}</mat-card-title>
+          <mat-card-subtitle>{{ entry.tagsId.title }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ entry.text }}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <div class="btn-flex">
+            <button mat-button [routerLink]="['/entry/about/', entry._id]">
+              MORE
+            </button>
+            <p>{{ entry.usersId.username }}</p>
+          </div>
+        </mat-card-actions>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+  <ng-template #containsEntries>
+    <h2 class="err-mess">No Entries</h2>
+  </ng-template>
 </ng-template>

@@ -2,7 +2,7 @@
   <span>Blog</span>
   <nav>
     <button mat-button [routerLink]="['/']">All Entries</button>
-    <button *ngIf="isRegistred" mat-button [routerLink]="['/create']">Add Entries</button>
+    <button *ngIf="isRegistred" mat-button [routerLink]="['/entry/create']">Add Entries</button>
     <button mat-button [matMenuTriggerFor]="belowMenu">
       <mat-icon>person</mat-icon>
     </button>

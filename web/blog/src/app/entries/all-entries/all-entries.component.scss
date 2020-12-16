@@ -2,3 +2,15 @@
   font-size: 46px;
   margin: 40px 0;
 }
+
+.btn-flex {
+  display: flex;
+  justify-content: space-between;
+  // margin-right: 10px;
+  align-items: center;
+  p {
+    margin: 0;
+    text-overflow: ellipsis;
+    max-height: 10px;
+  }
+}

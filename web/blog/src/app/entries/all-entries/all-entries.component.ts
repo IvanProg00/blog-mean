@@ -9,12 +9,14 @@ import { EntriesService } from '../entries.service';
 })
 export class AllEntriesComponent implements OnInit {
   public entries: Entrie[] = [];
+  public isLoading: boolean = true;
 
   constructor(private entriesService: EntriesService) {}
 
   ngOnInit(): void {
     this.entriesService.getAllEntries().subscribe((a: Response) => {
       this.entries = a.data;
+      this.isLoading = false;
     });
   }
 }

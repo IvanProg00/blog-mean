@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
           this.userService.registred = true;
         },
         (err: HttpErrorResponse) => {
-          this.error = err.error.error;
+          this.error = err.error?.error;
         }
       );
     }

@@ -19,14 +19,13 @@ const {
 
 const schemaFields = ["title", "text"];
 const schemaFieldsOnSave = ["usersId", "tagsId"];
-const showAllFields = { title: 1, usersId: 1, tagsId: 1 };
 const showEntriesFields = { __v: 0 };
 const showUserFields = { __v: 0, password: 0 };
 const showTagsField = { __v: 0 };
 
 router.get("", async (_, res) => {
   let isCorrect = true;
-  let entries = await Entries.find({}, showAllFields);
+  let entries = await Entries.find({}, showEntriesFields);
 
   for (let i in entries) {
     await Users.findById(entries[i].usersId, showUserFields, (err, user) => {
@@ -49,9 +48,9 @@ router.get("", async (_, res) => {
       entries[i].tagsId = tag;
     });
 
-    if (!entries) {
+    if (!isCorrect) {
       entries = [];
-      return;
+      break;
     }
   }
 

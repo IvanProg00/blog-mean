@@ -2,8 +2,8 @@ export interface Entrie {
   _id: string;
   title: string;
   text: string;
-  tagsId: string;
-  usersId: string;
+  tagsId: Tag;
+  usersId: User;
 }
 
 export interface AddEntrie {
