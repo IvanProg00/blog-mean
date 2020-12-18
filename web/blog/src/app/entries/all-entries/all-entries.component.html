@@ -6,21 +6,27 @@
     [gutterSize]="['10px']"
   >
     <mat-grid-tile *ngFor="let entry of entries">
-      <mat-card [style]="{ margin: '6px' }">
+      <mat-card class="card">
         <mat-card-header>
-          <mat-card-title>{{ entry.title }}</mat-card-title>
-          <mat-card-subtitle>{{ entry.tagsId.title }}</mat-card-subtitle>
+          <mat-card-title>
+            {{ entry.title }} ({{ entry.usersId.username }})
+          </mat-card-title>
+          <mat-card-subtitle>
+            {{ entry.tagsId.title }}
+          </mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
-          <p>{{ entry.text }}</p>
+          <p class="card-content">{{ entry.text }}</p>
         </mat-card-content>
         <mat-card-actions>
-          <div class="btn-flex">
-            <button mat-button [routerLink]="['/entry/about/', entry._id]">
-              MORE
-            </button>
-            <p>{{ entry.usersId.username }}</p>
-          </div>
+          <button
+            mat-raised-button
+            [color]="color"
+            mat-button
+            [routerLink]="['/entry/about/', entry._id]"
+          >
+            MORE
+          </button>
         </mat-card-actions>
       </mat-card>
     </mat-grid-tile>

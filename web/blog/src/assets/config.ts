@@ -7,4 +7,13 @@ const apiUrlLogin: string = `${API_URL}/login`;
 
 const INVALID_FORM = 'INVALID';
 
-export { apiUrlUsers, apiUrlEntries, apiUrlTags, apiUrlLogin, INVALID_FORM };
+const BG_COLOR = 'primary';
+
+export {
+  apiUrlUsers,
+  apiUrlEntries,
+  apiUrlTags,
+  apiUrlLogin,
+  INVALID_FORM,
+  BG_COLOR,
+};

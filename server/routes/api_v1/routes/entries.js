@@ -60,15 +60,33 @@ router.get("", async (_, res) => {
 
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
-  Entries.findById(id, showEntriesFields, (err, entry) => {
+
+  Entries.findById(id, showEntriesFields, async (err, entry) => {
     if (err) {
+      res.status(400);
       res.json(sendJSONError(INCORRECT_ID));
       return;
     }
-    Users.findById(entry.usersId, showEntriesFields);
+
+    await Users.findById(entry.usersId, showEntriesFields, (err, user) => {
+      if (err) {
+        res.status(400);
+        res.json(sendJSONError(USER_NOT_FOUND));
+        entry = false;
+      }
+      entry.usersId = user;
+    });
+    await Tags.findById(entry.tagsId, showEntriesFields, (err, tag) => {
+      if (err) {
+        res.status(400);
+        res.json(sendJSONError(USER_NOT_FOUND));
+        entry = false;
+      }
+      entry.tagsId = tag;
+    });
+
     if (entry) {
       res.status(200);
-      console.log(entry);
       res.json(sendJSON(entry));
     } else {
       res.json(sendJSONError(ENTRY_NOT_FOUND));

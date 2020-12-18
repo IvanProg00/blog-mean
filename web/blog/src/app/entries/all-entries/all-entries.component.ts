@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Entrie, Response } from 'src/app/interfaces';
+import { Entry, Response } from 'src/app/interfaces';
+import { BG_COLOR } from 'src/assets/config';
 import { EntriesService } from '../entries.service';
 
 @Component({
@@ -8,15 +9,21 @@ import { EntriesService } from '../entries.service';
   styleUrls: ['./all-entries.component.scss'],
 })
 export class AllEntriesComponent implements OnInit {
-  public entries: Entrie[] = [];
+  public color: string = BG_COLOR;
+  public entries: Entry[] = [];
   public isLoading: boolean = true;
 
   constructor(private entriesService: EntriesService) {}
 
   ngOnInit(): void {
-    this.entriesService.getAllEntries().subscribe((a: Response) => {
-      this.entries = a.data;
-      this.isLoading = false;
-    });
+    this.entriesService.getAllEntries().subscribe(
+      (a: Response) => {
+        this.entries = a.data;
+        this.isLoading = false;
+      },
+      (_: Response) => {
+        this.isLoading = false;
+      }
+    );
   }
 }

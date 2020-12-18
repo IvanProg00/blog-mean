@@ -1,4 +1,4 @@
-export interface Entrie {
+export interface Entry {
   _id: string;
   title: string;
   text: string;
@@ -6,7 +6,7 @@ export interface Entrie {
   usersId: User;
 }
 
-export interface AddEntrie {
+export interface AddEntry {
   title: string;
   text: string;
   tagsId: string;

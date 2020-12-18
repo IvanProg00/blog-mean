@@ -1,6 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from 'src/app/user/user.service';
+import { BG_COLOR } from 'src/assets/config';
 
 @Component({
   selector: 'app-header',
@@ -8,7 +9,7 @@ import { UserService } from 'src/app/user/user.service';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
-  @Input() mainColor;
+  public color: string = BG_COLOR;
 
   constructor(private router: Router, private userService: UserService) {}
 
@@ -31,6 +32,6 @@ export class HeaderComponent implements OnInit {
   public logout(): void {
     this.userService.dropToken();
     this.isLogined();
-    this.router.navigate(["/"]);
+    this.router.navigate(['/']);
   }
 }

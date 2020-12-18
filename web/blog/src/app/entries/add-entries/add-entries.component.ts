@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AddEntrie, Response, Tag } from 'src/app/interfaces';
+import { AddEntry, Response, Tag } from 'src/app/interfaces';
 import { TagsService } from 'src/app/tags/tags.service';
 import { UserService } from 'src/app/user/user.service';
 import { EntriesService } from '../entries.service';
@@ -18,7 +18,7 @@ import { EntriesService } from '../entries.service';
 })
 export class AddEntriesComponent implements OnInit {
   public entrieForm: FormGroup;
-  public addEntrie: AddEntrie = {
+  public addEntrie: AddEntry = {
     title: '',
     text: '',
     tagsId: '',
@@ -58,7 +58,7 @@ export class AddEntriesComponent implements OnInit {
 
   public onSubmit(): void {
     if (!this.entrieForm.invalid) {
-      this.entriesService.createEntrie(this.entrieForm.value).subscribe((_: Response) => {
+      this.entriesService.createEntry(this.entrieForm.value).subscribe((_: Response) => {
         this.router.navigate(["/"])
       });
     }
