@@ -2,9 +2,19 @@ const { Router } = require("express");
 const router = Router();
 
 const { sendJSON, sendJSONError } = require("../json_messages");
-const { createObjOfSchema } = require("../functions");
+const { createObjOfSchema, formatErrors } = require("../functions");
 const Tags = require("../../../models/Tags");
-const { INCORRECT_ID, TAG_NOT_FOUND, TAG_DELETED, TAG_CREATED, TAG_CHANGED } = require("../../../messages");
+const {
+  INCORRECT_ID,
+  TAG_NOT_FOUND,
+  TAG_DELETED,
+  TAG_CREATED,
+  TAG_CHANGED,
+  NO_PRIVELEGES,
+} = require("../../../messages");
+const { validateAuthorized } = require("../authorization");
+const Users = require("../../../models/Users");
+const { ROOT_PRIVELEGES } = require("../../../config");
 
 const schemaFields = ["title"];
 const showAllFields = { title: 1 };
@@ -32,20 +42,24 @@ router.get("/:id", async (req, res) => {
   });
 });
 
-router.post("", (req, res) => {
+router.post("", async (req, res) => {
   const newTag = createObjOfSchema(schemaFields, req);
-  console.log(newTag);
+  const userId = await validateAuthorized(req.body.token, res);
+  if (!userId) return;
+
+  const user = await Users.findById(userId);
+  if (user.privelages < ROOT_PRIVELEGES) {
+    res.status(400);
+    res.json(sendJSONError(NO_PRIVELEGES));
+    return;
+  }
   const tag = new Tags(newTag);
 
   tag.save((err) => {
     if (err) {
+      const errors = formatErrors(err);
       res.status(400);
-      const errors = err.errors;
-      const errorsFormatted = {};
-      for (let key in errors) {
-        errorsFormatted[key] = errors[key]?.kind;
-      }
-      res.json(sendJSONError(errorsFormatted));
+      res.json(sendJSONError(errors));
       return;
     }
     res.status(201);
@@ -58,9 +72,11 @@ router.put("/:id", (req, res) => {
 
   Tags.findByIdAndUpdate(id, { $set: updateTag }, (err) => {
     if (err) {
+      res.status(400);
       res.json(sendJSONError(err));
       return;
     }
+    res.status(200);
     res.json(sendJSON(TAG_CHANGED));
   });
 });

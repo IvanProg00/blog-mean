@@ -18,8 +18,7 @@ mongoose.connect(
 
 mongoose.connection
   .on("error", (err) => {
-    console.log("error");
-    // console.error(err);
+    console.error(err);
   })
   .once("open", () => {
     console.log("Mongodb is working...");

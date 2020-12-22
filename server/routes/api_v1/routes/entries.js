@@ -67,6 +67,11 @@ router.get("/:id", async (req, res) => {
       res.json(sendJSONError(INCORRECT_ID));
       return;
     }
+    if (!entry) {
+      res.status(400);
+      res.json(sendJSONError(ENTRY_NOT_FOUND));
+      return;
+    }
 
     await Users.findById(entry.usersId, showEntriesFields, (err, user) => {
       if (err) {

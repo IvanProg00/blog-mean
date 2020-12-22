@@ -25,6 +25,7 @@ export class AboutEntriesComponent implements OnInit {
     },
   };
   public isLoaded: boolean = false;
+  public isFound: boolean = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -43,6 +44,10 @@ export class AboutEntriesComponent implements OnInit {
     this.entriesService.getEntry(this.id).subscribe((res: Response) => {
       this.entry = res.data;
       this.isLoaded = true;
+      this.isFound = true;
+    }, (_: Response) => {
+      this.isLoaded = true;
+      this.isFound = false;
     });
   }
 

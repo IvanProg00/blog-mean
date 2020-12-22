@@ -26,4 +26,8 @@ body {
   display: block;
   width: 100%;
   text-align: center;
+  &.big-letters {
+    font-size: 46px;
+    margin: 40px 0;
+  }
 }

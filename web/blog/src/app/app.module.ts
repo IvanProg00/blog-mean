@@ -10,9 +10,7 @@ import { EntriesModule } from './entries/entries.module';
 import { FooterComponent } from './layouts/footer/footer.component';
 import { HttpClientModule } from '@angular/common/http';
 import { UserModule } from './user/user.module';
-import { FormsModule } from "@angular/forms";
 import { TagsModule } from './tags/tags.module';
-import { LoadingComponent } from './layouts/loading/loading.component';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent, FooterComponent],

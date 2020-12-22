@@ -1,6 +1,6 @@
 <app-loading *ngIf="!isLoaded; else loaded"></app-loading>
 <ng-template #loaded>
-  <mat-card class="card">
+  <mat-card *ngIf="isFound; else notFound" class="card">
     <mat-card-header>
       <div mat-card-avatar class="example-header-image"></div>
       <mat-card-title>
@@ -19,4 +19,7 @@
       </button>
     </mat-card-actions>
   </mat-card>
+  <ng-template #notFound>
+    <h2 class="err-mess big-letters">Entry not found</h2>
+  </ng-template>
 </ng-template>

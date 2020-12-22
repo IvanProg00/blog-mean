@@ -18,7 +18,12 @@ module.exports = {
 
   SIGN_IN: "Logined",
 
-  TOKEN_NOT_FOUND: "User isn't registred",
+  TOKEN_NOT_FOUND: "Token not found",
+  TOKEN_INCORRECT: "Token is incorrect",
+
+  NO_PRIVELEGES: "You don't have priveleges to make it.",
+
+  LOGIN_REQUIRED: "Username and Password are required",
 
   UNIQUE_VALUES: {
     username: "Username is unique"

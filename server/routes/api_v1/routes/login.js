@@ -2,20 +2,22 @@ const { Router } = require("express");
 const router = Router();
 
 const Users = require("../../../models/Users");
-const { cryptPassword } = require("../functions");
-const { sendJSONAndToken, sendJSONError } = require("../json_messages");
-const { USER_NOT_FOUND, SIGN_IN } = require("../../../messages");
-const { getJWT } = require("../authorization");
+const { cryptPassword, createObjOfSchema } = require("../functions");
+const { sendJSONAndToken, sendJSONError, sendJSON } = require("../json_messages");
+const {
+  USER_NOT_FOUND,
+  SIGN_IN,
+  LOGIN_REQUIRED,
+} = require("../../../messages");
+const { getJWT, validateAuthorized } = require("../authorization");
+const loginKeys = ["username", "password"];
 
 router.post("", async (req, res) => {
-  const user = {
-    username: req.body?.username,
-    password: req.body?.password,
-  };
+  const user = createObjOfSchema(loginKeys, req);
 
   if (!(user?.username && user?.password)) {
     res.status(400);
-    res.json(sendJSONError("Username and Password are required"));
+    res.json(sendJSONError(LOGIN_REQUIRED));
     return;
   }
 
@@ -28,6 +30,22 @@ router.post("", async (req, res) => {
     return;
   }
   res.json(sendJSONAndToken(SIGN_IN, getJWT(detectedUser._id)));
+});
+
+router.get("/:token", async (req, res) => {
+  const userId = await validateAuthorized(req.params?.token, res);
+  if (!userId) return;
+
+  Users.findById(userId, (err, user) => {
+    if (err) {
+      res.status(400);
+      res.json(sendJSONError(USER_NOT_FOUND));
+      return;
+    }
+
+    res.status(200);
+    res.json(sendJSON(user));
+  });
 });
 
 module.exports = router;
