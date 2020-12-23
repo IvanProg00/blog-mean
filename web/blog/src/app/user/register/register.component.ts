@@ -1,4 +1,4 @@
-import { Router } from "@angular/router";
+import { Router } from '@angular/router';
 import { Component, Input, ViewChild, ViewContainerRef } from '@angular/core';
 import {
   AbstractControl,
@@ -7,7 +7,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { Response, UserRegister, UserRegisterError } from 'src/app/interfaces';
-import { INVALID_FORM } from 'src/assets/config';
 import { UserService } from '../user.service';
 
 @Component({
@@ -33,15 +32,15 @@ export class RegisterComponent {
   }
 
   public onSubmit(): void {
-    if (this.registerForm.status === INVALID_FORM) {
+    if (this.registerForm.invalid) {
       this.error = null;
     } else {
       this.userService
         .registerUser(this.registerForm.value)
-        .subscribe((a: Response) => {
-          this.userService.setToken(a);
-          this.router.navigate(["/"]);
-          this.userService.registred = true;
+        .subscribe((res: Response) => {
+          this.userService.setToken(res);
+          this.userService.setUser();
+          this.router.navigate(['/']);
         });
     }
   }

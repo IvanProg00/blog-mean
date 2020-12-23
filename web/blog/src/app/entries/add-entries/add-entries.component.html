@@ -1,6 +1,6 @@
-<mat-card class="user-card">
+<mat-card class="form-card">
   <mat-card-header>
-    <mat-card-title>Add Entrie</mat-card-title>
+    <mat-card-title>Add Entry</mat-card-title>
   </mat-card-header>
   <mat-card-content>
     <form (submit)="onSubmit()" [formGroup]="entrieForm">
@@ -18,12 +18,14 @@
       <mat-form-field class="field">
         <mat-label>Tag</mat-label>
         <mat-select formControlName="tagsId">
-          <mat-option *ngFor="let tag of allTags" matInput [value]="tag._id">{{ tag.title }}</mat-option>
+          <mat-option *ngFor="let tag of allTags" matInput [value]="tag._id">{{
+            tag.title
+          }}</mat-option>
         </mat-select>
       </mat-form-field>
-      <button class="user-btn" color="primary" mat-raised-button type="submit">ADD ENTRIE</button>
+      <button class="submit-btn" color="primary" mat-raised-button type="submit">
+        ADD ENTRIE
+      </button>
     </form>
   </mat-card-content>
 </mat-card>
-
-

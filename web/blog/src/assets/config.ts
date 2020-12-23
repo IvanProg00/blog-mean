@@ -5,15 +5,18 @@ const apiUrlEntries: string = `${API_URL}/entries`;
 const apiUrlTags: string = `${API_URL}/tags`;
 const apiUrlLogin: string = `${API_URL}/login`;
 
-const INVALID_FORM = 'INVALID';
+// const INVALID_FORM: string = 'INVALID';
 
-const BG_COLOR = 'primary';
+const BG_COLOR: string = 'primary';
+
+const ROOT_PRIVELEGES: number = 2;
 
 export {
   apiUrlUsers,
   apiUrlEntries,
   apiUrlTags,
   apiUrlLogin,
-  INVALID_FORM,
+  // INVALID_FORM,
   BG_COLOR,
+  ROOT_PRIVELEGES,
 };

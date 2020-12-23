@@ -18,10 +18,16 @@ export interface Tag {
   title: string;
 }
 
+export interface AddTag {
+  title: string;
+  token: string;
+}
+
 export interface User {
   _id: string;
   username: string;
   email: string;
+  privelages: number;
 }
 
 export interface UserRegister {

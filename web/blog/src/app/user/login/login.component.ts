@@ -1,9 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { Response, UserLogin } from 'src/app/interfaces';
-import { INVALID_FORM } from 'src/assets/config';
 import { UserService } from '../user.service';
 
 @Component({
@@ -29,14 +33,14 @@ export class LoginComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    if (this.loginForm.status === INVALID_FORM) {
+    if (this.loginForm.invalid) {
       this.error = null;
     } else {
       this.userService.loginUser(this.loginForm.value).subscribe(
         (data: Response) => {
           this.userService.setToken(data);
-          this.router.navigate(["/"]);
-          this.userService.registred = true;
+          this.userService.setUser();
+          this.router.navigate(['/']);
         },
         (err: HttpErrorResponse) => {
           this.error = err.error?.error;

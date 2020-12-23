@@ -1,4 +1,4 @@
-<mat-card class="user-card">
+<mat-card class="form-card">
   <mat-card-header>
     <mat-card-title>Registration</mat-card-title>
   </mat-card-header>
@@ -19,7 +19,7 @@
         <input matInput formControlName="password" name="password" type="password" />
         <mat-error *ngIf="password?.errors?.required">Password is required</mat-error>
       </mat-form-field>
-      <button class="user-btn" color="primary" mat-raised-button type="submit">REGISTER</button>
+      <button class="submit-btn" color="primary" mat-raised-button type="submit">REGISTER</button>
     </form>
   </mat-card-content>
 </mat-card>

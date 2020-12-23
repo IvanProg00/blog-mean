@@ -18,6 +18,7 @@ export class AboutEntriesComponent implements OnInit {
       _id: '',
       username: '',
       email: '',
+      privelages: null,
     },
     tagsId: {
       _id: '',
@@ -41,14 +42,17 @@ export class AboutEntriesComponent implements OnInit {
   }
 
   private loadEntry(): void {
-    this.entriesService.getEntry(this.id).subscribe((res: Response) => {
-      this.entry = res.data;
-      this.isLoaded = true;
-      this.isFound = true;
-    }, (_: Response) => {
-      this.isLoaded = true;
-      this.isFound = false;
-    });
+    this.entriesService.getEntry(this.id).subscribe(
+      (res: Response) => {
+        this.entry = res.data;
+        this.isLoaded = true;
+        this.isFound = true;
+      },
+      (_: Response) => {
+        this.isLoaded = true;
+        this.isFound = false;
+      }
+    );
   }
 
   public onDelete(): void {
