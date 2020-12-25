@@ -2,11 +2,10 @@
 <ng-template #loaded>
   <mat-card *ngIf="isFound; else notFound" class="card">
     <mat-card-header>
-      <div mat-card-avatar class="example-header-image"></div>
       <mat-card-title>
         {{ entry.tagsId.title }} ({{ entry.usersId.username }})
       </mat-card-title>
-      <mat-card-subtitle class="types-flex">
+      <mat-card-subtitle>
         {{ entry.tagsId.title }}
       </mat-card-subtitle>
     </mat-card-header>

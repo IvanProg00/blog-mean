@@ -17,6 +17,7 @@
         </button>
       </ng-template>
       <ng-template #loading>
+        <button mat-menu-item [routerLink]="['/user/about', user._id]">{{ user.username }}</button>
         <button mat-menu-item (click)="logout()">Log out</button>
       </ng-template>
     </mat-menu>

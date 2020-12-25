@@ -23,16 +23,13 @@ export class HeaderComponent implements OnInit, DoCheck {
   constructor(private router: Router, private userService: UserService) {}
 
   ngOnInit(): void {
-    this.userService.setRegistred();
-    this.userService.getUserByToken().subscribe(
-      (res: Response) => {
-        this.user = res.data;
-      },
-      (err: HttpErrorResponse) => {
-        console.error(err);
-        this.userService.dropToken();
-      }
-    );
+    const userByToken = this.userService.getUserByToken();
+    if (!userByToken) return;
+    userByToken.subscribe((res: Response) => {
+      this.user = res.data;
+      this.userService.setUser(this.user);
+      this.userService.setRegistred();
+    });
   }
 
   ngDoCheck() {

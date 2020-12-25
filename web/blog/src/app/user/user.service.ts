@@ -1,5 +1,5 @@
 import { Injectable, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Response, User, UserLogin, UserRegister } from '../interfaces';
 import { apiUrlLogin, apiUrlUsers } from 'src/assets/config';
 import { Observable } from 'rxjs';
@@ -37,10 +37,12 @@ export class UserService {
 
   public dropToken(): void {
     localStorage.removeItem('token');
+    this.cleanUser();
     this.setRegistred();
   }
 
   public getRegistred(): boolean {
+    this.setRegistred();
     return this.registred;
   }
 
@@ -54,16 +56,47 @@ export class UserService {
 
   public getUserByToken(): Observable<any> {
     const token = this.getToken();
-    return this.http.get(`${apiUrlLogin}/${token}`);
+    if (token) {
+      return this.http.get(`${apiUrlLogin}/${token}`);
+    }
+    return;
   }
 
-  public setUser(): void {
-    this.getUserByToken().subscribe((res: Response) => {
-      this.user = res.data;
-    });
+  public setUserByToken(): void {
+    const userByToken = this.getUserByToken();
+    if (userByToken) {
+      userByToken.subscribe(
+        (res: Response) => {
+          this.user = res.data;
+          this.setRegistred();
+        },
+        (err: HttpErrorResponse) => {
+          this.dropToken();
+          this.setRegistred();
+          console.error(err);
+        }
+      );
+    }
   }
 
   public getUser(): User {
     return this.user;
+  }
+
+  public setUser(user: User): void {
+    this.user = user;
+  }
+
+  private cleanUser(): void {
+    this.user = {
+      _id: '',
+      email: '',
+      privelages: null,
+      username: '',
+    };
+  }
+
+  public deleteUser(id: string): Observable<any> {
+    return this.http.delete(`${apiUrlUsers}/${id}`);
   }
 }

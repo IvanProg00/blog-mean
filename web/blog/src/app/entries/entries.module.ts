@@ -6,11 +6,11 @@ import { MaterialModule } from '../material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AboutEntriesComponent } from './about-entries/about-entries.component';
 import { RouterModule } from '@angular/router';
-import { LoadingComponent } from '../layouts/loading/loading.component';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
-  declarations: [AllEntriesComponent, AddEntriesComponent, AboutEntriesComponent, LoadingComponent],
+  declarations: [AllEntriesComponent, AddEntriesComponent, AboutEntriesComponent],
   exports: [],
-  imports: [CommonModule, MaterialModule, ReactiveFormsModule, FormsModule, RouterModule],
+  imports: [CommonModule, MaterialModule, ReactiveFormsModule, FormsModule, RouterModule, SharedModule],
 })
 export class EntriesModule {}

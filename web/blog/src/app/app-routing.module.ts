@@ -5,7 +5,8 @@ import { AddEntriesComponent } from './entries/add-entries/add-entries.component
 import { AllEntriesComponent } from './entries/all-entries/all-entries.component';
 import { LoginComponent } from './user/login/login.component';
 import { RegisterComponent } from './user/register/register.component';
-import { AddTagsComponent } from "./tags/add-tags/add-tags.component"
+import { AddTagsComponent } from './tags/add-tags/add-tags.component';
+import { AboutUserComponent } from './user/about-user/about-user.component';
 
 const routes: Routes = [
   { path: '', component: AllEntriesComponent, pathMatch: 'full' },
@@ -14,8 +15,9 @@ const routes: Routes = [
 
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'user/about/:id', component: AboutUserComponent },
 
-  { path: 'tag/create', component: AddTagsComponent }
+  { path: 'tag/create', component: AddTagsComponent },
 ];
 
 @NgModule({

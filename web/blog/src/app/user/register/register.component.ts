@@ -39,7 +39,7 @@ export class RegisterComponent {
         .registerUser(this.registerForm.value)
         .subscribe((res: Response) => {
           this.userService.setToken(res);
-          this.userService.setUser();
+          this.userService.setUserByToken();
           this.router.navigate(['/']);
         });
     }
