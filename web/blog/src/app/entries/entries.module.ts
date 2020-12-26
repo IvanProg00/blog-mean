@@ -10,7 +10,6 @@ import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [AllEntriesComponent, AddEntriesComponent, AboutEntriesComponent],
-  exports: [],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule, FormsModule, RouterModule, SharedModule],
 })
 export class EntriesModule {}

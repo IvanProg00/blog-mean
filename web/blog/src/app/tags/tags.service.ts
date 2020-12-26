@@ -17,4 +17,8 @@ export class TagsService {
   public createTag(tag: AddTag): Observable<any> {
     return this.http.post(apiUrlTags, tag);
   }
+
+  public deleteTag(id: string): Observable<any> {
+    return this.http.delete(`${apiUrlTags}/${id}`);
+  }
 }

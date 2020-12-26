@@ -9,7 +9,13 @@
       <p>Privelages: {{ user.privelages }}</p>
     </mat-card-content>
     <mat-card-actions>
-      <button mat-raised-button color="warn" mat-button (click)="onDelete()">
+      <button
+        *ngIf="canDelete"
+        mat-raised-button
+        color="warn"
+        mat-button
+        (click)="onDelete()"
+      >
         DELETE
       </button>
     </mat-card-actions>
@@ -18,4 +24,3 @@
     <h2 class="err-mess big-letters">Entry not found</h2>
   </ng-template>
 </ng-template>
-

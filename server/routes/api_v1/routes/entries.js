@@ -28,6 +28,9 @@ router.get("", async (_, res) => {
   let entries = await Entries.find({}, showEntriesFields);
 
   for (let i in entries) {
+    let addUser = {};
+    let addTag = {};
+
     await Users.findById(entries[i].usersId, showUserFields, (err, user) => {
       if (err) {
         res.status(400);
@@ -35,7 +38,7 @@ router.get("", async (_, res) => {
         isCorrect = false;
         return;
       }
-      entries[i].usersId = user;
+      addUser = user;
     });
 
     await Tags.findById(entries[i].tagsId, showTagsField, (err, tag) => {
@@ -45,12 +48,12 @@ router.get("", async (_, res) => {
         isCorrect = false;
         return;
       }
-      entries[i].tagsId = tag;
+      addTag = tag;
     });
 
-    if (!isCorrect) {
-      entries = [];
-      break;
+    if (isCorrect) {
+      entries[i].usersId = addUser;
+      entries[i].tagsId = addTag;
     }
   }
 

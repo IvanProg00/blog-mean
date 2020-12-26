@@ -3,7 +3,14 @@
   <mat-card *ngIf="isFound; else notFound" class="card">
     <mat-card-header>
       <mat-card-title>
-        {{ entry.tagsId.title }} ({{ entry.usersId.username }})
+        {{ entry.tagsId.title }}
+        <button
+          mat-button
+          [color]="color"
+          [routerLink]="['/user/about', entry.usersId._id]"
+        >
+          {{ entry.usersId.username }}
+        </button>
       </mat-card-title>
       <mat-card-subtitle>
         {{ entry.tagsId.title }}

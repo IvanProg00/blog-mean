@@ -1,5 +1,9 @@
 import { Injectable, OnInit } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { Response, User, UserLogin, UserRegister } from '../interfaces';
 import { apiUrlLogin, apiUrlUsers } from 'src/assets/config';
 import { Observable } from 'rxjs';
@@ -79,6 +83,10 @@ export class UserService {
     }
   }
 
+  public getUserById(id: string): Observable<any> {
+    return this.http.get(`${apiUrlUsers}/${id}`);
+  }
+
   public getUser(): User {
     return this.user;
   }
@@ -97,6 +105,10 @@ export class UserService {
   }
 
   public deleteUser(id: string): Observable<any> {
-    return this.http.delete(`${apiUrlUsers}/${id}`);
+    return this.http.request<string>('delete', `${apiUrlUsers}/${id}`, {
+      body: {
+        token: this.getToken(),
+      },
+    });
   }
 }

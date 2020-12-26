@@ -1,0 +1,9 @@
+<app-loading *ngIf="!isLoaded; else loaded"></app-loading>
+<ng-template #loaded>
+  <mat-card *ngFor="let tag of tags" class="card-tags">
+    <mat-card-title>{{ tag.title }}</mat-card-title>
+    <mat-card-actions>
+      <button mat-flat-button color="warn" (click)="onDelete(tag._id)">DELETE</button>
+    </mat-card-actions>
+  </mat-card>
+</ng-template>

@@ -25,7 +25,7 @@ export class EntriesService {
 
   public deleteEntry(id: string): Observable<any> {
     const token: string = this.userService.getToken();
-    return this.http.request<any>('delete', `${apiUrlEntries}/${id}`, {
+    return this.http.request<string>('delete', `${apiUrlEntries}/${id}`, {
       body: {
         token: token,
       },

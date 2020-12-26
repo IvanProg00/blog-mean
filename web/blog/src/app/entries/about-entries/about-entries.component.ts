@@ -1,6 +1,9 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Response, Entry } from 'src/app/interfaces';
+import { BG_COLOR } from 'src/assets/config';
 import { EntriesService } from '../entries.service';
 
 @Component({
@@ -9,7 +12,8 @@ import { EntriesService } from '../entries.service';
   styleUrls: ['./about-entries.component.scss'],
 })
 export class AboutEntriesComponent implements OnInit {
-  private id: string;
+  private messageDuration: number = 1500;
+  public color: string = BG_COLOR;
   public entry: Entry = {
     _id: '',
     title: '',
@@ -31,18 +35,18 @@ export class AboutEntriesComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private entriesService: EntriesService,
-    private router: Router
+    private router: Router,
+    private _snackBar: MatSnackBar
   ) {}
 
   ngOnInit() {
     this.activatedRoute.params.subscribe((params: Params) => {
-      this.id = params.id;
-      this.loadEntry();
+      this.loadEntry(params.id);
     });
   }
 
-  private loadEntry(): void {
-    this.entriesService.getEntry(this.id).subscribe(
+  private loadEntry(id: string): void {
+    this.entriesService.getEntry(id).subscribe(
       (res: Response) => {
         this.entry = res.data;
         this.isLoaded = true;
@@ -56,8 +60,19 @@ export class AboutEntriesComponent implements OnInit {
   }
 
   public onDelete(): void {
-    this.entriesService.deleteEntry(this.id).subscribe((_: Response) => {
-      this.router.navigate(['/']);
-    });
+    this.entriesService.deleteEntry(this.entry._id).subscribe(
+      (_: Response) => {
+        this.router.navigate(['/']);
+        this._snackBar.open('Entry Deleted.', undefined, {
+          duration: this.messageDuration,
+        });
+      },
+      (err: HttpErrorResponse) => {
+        console.error(err);
+        this._snackBar.open("You can't delete this entry.", undefined, {
+          duration: this.messageDuration,
+        });
+      }
+    );
   }
 }

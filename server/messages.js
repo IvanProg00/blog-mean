@@ -5,6 +5,7 @@ module.exports = {
   USER_NOT_FOUND: "User Not Found",
   USER_DELETED: "User Deleted",
   USER_CHANGED: "User Changed",
+  USER_CANT_DELETED: "User can't be deleted.",
 
   TAG_CREATED: "Created",
   TAG_NOT_FOUND: "Tag Not Found",

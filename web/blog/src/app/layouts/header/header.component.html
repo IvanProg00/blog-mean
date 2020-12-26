@@ -1,9 +1,14 @@
 <mat-toolbar [color]="color">
   <span>Blog</span>
   <nav>
-    <button *ngIf="isRegistred && user.privelages >= tagPrivelages" mat-button [routerLink]="['/tag/create']">Create Tag</button>
     <button mat-button [routerLink]="['/']">All Entries</button>
-    <button *ngIf="isRegistred" mat-button [routerLink]="['/entry/create']">Add Entry</button>
+    <button *ngIf="isRegistred" mat-button [routerLink]="['/entries/create']">
+      Add Entry
+    </button>
+    <ng-template [ngIf]="isRegistred && user.privelages >= tagPrivelages">
+      <button mat-button [routerLink]="['/tags']">All Tags</button>
+      <button mat-button [routerLink]="['/tags/create']">Create Tag</button>
+    </ng-template>
     <button mat-button [matMenuTriggerFor]="belowMenu">
       <mat-icon>person</mat-icon>
     </button>
@@ -17,7 +22,9 @@
         </button>
       </ng-template>
       <ng-template #loading>
-        <button mat-menu-item [routerLink]="['/user/about', user._id]">{{ user.username }}</button>
+        <button mat-menu-item [routerLink]="['/user/about', user._id]">
+          {{ user.username }}
+        </button>
         <button mat-menu-item (click)="logout()">Log out</button>
       </ng-template>
     </mat-menu>

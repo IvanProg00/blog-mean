@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import {
   AbstractControl,
@@ -31,7 +32,12 @@ export class AddTagsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.userService.getUserByToken().subscribe((res: Response) => {
+    const getUser = this.userService.getUserByToken();
+    if (!getUser) {
+      this.router.navigate(['/']);
+      return;
+    }
+    getUser.subscribe((res: Response) => {
       const user: User = res.data;
       if (user.privelages < ROOT_PRIVELEGES) {
         this.router.navigate(['/']);
@@ -45,11 +51,14 @@ export class AddTagsComponent implements OnInit {
 
   public onSubmit(): void {
     if (!this.tagForm.invalid) {
-      this.tagsService
-        .createTag(this.tagForm.value)
-        .subscribe((res: Response) => {
-          console.log(res.data);
-        });
+      this.tagsService.createTag(this.tagForm.value).subscribe(
+        (_: Response) => {
+          this.router.navigate(['/']);
+        },
+        (err: HttpErrorResponse) => {
+          this.error = err.message;
+        }
+      );
     }
   }
 

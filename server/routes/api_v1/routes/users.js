@@ -15,6 +15,7 @@ const {
   USER_NOT_FOUND,
   USER_DELETED,
   USER_CHANGED,
+  USER_CANT_DELETED,
 } = require("../../../messages");
 
 const schemaFields = ["username", "password", "email"];
@@ -52,8 +53,8 @@ router.post("", (req, res) => {
     if (passwdErr) {
       if (!err) {
         err = {
-          errors: {}
-        }
+          errors: {},
+        };
       }
       err.errors = { ...passwdErr, ...err.errors };
     }
@@ -79,31 +80,41 @@ router.post("", (req, res) => {
 
 router.put("/:id", (req, res) => {
   const id = validateAuthorized(req.params?.token, res);
-  if (id) {
-    const updateEntry = createObjOfSchema(schemaFields, req);
+  if (!id) return;
+  const updateUser = createObjOfSchema(schemaFields, req);
 
-    Users.findByIdAndUpdate(id, { $set: updateEntry }, (err) => {
-      if (err) {
-        res.json(sendJSONError(err));
-        return;
-      }
-      res.json(sendJSON(USER_CHANGED));
-    });
-  }
-});
-
-router.delete("/:id", (req, res) => {
-  const id = req.params?.id;
-
-  Users.findByIdAndDelete(id, (err, entry) => {
+  Users.findByIdAndUpdate(id, { $set: updateUser }, (err) => {
     if (err) {
       res.json(sendJSONError(err));
       return;
     }
-    if (!entry) {
+    res.json(sendJSON(USER_CHANGED));
+  });
+});
+
+router.delete("/:id", async (req, res) => {
+  const tokenId = await validateAuthorized(req.body?.token, res);
+  if (!tokenId) return;
+
+  const id = req.params?.id;
+  if (tokenId !== id) {
+    res.status(400);
+    res.json(sendJSONError(USER_CANT_DELETED));
+    return;
+  }
+
+  Users.findByIdAndDelete(id, (err, user) => {
+    if (err) {
+      res.status(400);
+      res.json(sendJSONError(err));
+      return;
+    }
+    if (!user) {
+      res.status(400);
       res.json(sendJSONError(USER_NOT_FOUND));
       return;
     }
+    res.status(200);
     res.json(sendJSON(USER_DELETED));
   });
 });
