@@ -2,7 +2,7 @@ const { Router } = require("express");
 const router = Router();
 
 const { sendJSON, sendJSONError } = require("../json_messages");
-const { createObjOfSchema, formatErrors } = require("../functions");
+const { createObjOfSchema, formatErrors, findUserByToken } = require("../functions");
 const Tags = require("../../../models/Tags");
 const {
   INCORRECT_ID,
@@ -11,6 +11,7 @@ const {
   TAG_CREATED,
   TAG_CHANGED,
   NO_PRIVELEGES,
+  TAG_CANT_DELETED,
 } = require("../../../messages");
 const { validateAuthorized } = require("../authorization");
 const Users = require("../../../models/Users");
@@ -81,7 +82,18 @@ router.put("/:id", (req, res) => {
   });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
+  const user = await findUserByToken(req.body?.token, res);
+  if (!user) {
+    return;
+  }
+
+  if (user.privelages < ROOT_PRIVELEGES) {
+    res.status(400);
+    res.json(sendJSONError(TAG_CANT_DELETED));
+    return;
+  }
+
   const id = req.params?.id;
 
   Tags.findByIdAndDelete(id, (err, entry) => {

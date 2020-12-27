@@ -8,11 +8,13 @@ import { RegisterComponent } from './user/register/register.component';
 import { AddTagsComponent } from './tags/add-tags/add-tags.component';
 import { AboutUserComponent } from './user/about-user/about-user.component';
 import { AllTagsComponent } from './tags/all-tags/all-tags.component';
+import { ChangeEntriesComponent } from './entries/change-entries/change-entries.component';
 
 const routes: Routes = [
   { path: '', component: AllEntriesComponent, pathMatch: 'full' },
   { path: 'entries/create', component: AddEntriesComponent },
   { path: 'entries/about/:id', component: AboutEntriesComponent },
+  { path: 'entries/change/:id', component: ChangeEntriesComponent },
 
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },

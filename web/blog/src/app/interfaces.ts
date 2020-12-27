@@ -13,6 +13,13 @@ export interface AddEntry {
   usersId: string;
 }
 
+export interface ChangeEntry {
+  _id: string;
+  title: string;
+  text: string;
+  tagsId: Tag;
+}
+
 export interface Tag {
   _id: string;
   title: string;

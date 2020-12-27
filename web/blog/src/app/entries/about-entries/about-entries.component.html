@@ -3,7 +3,7 @@
   <mat-card *ngIf="isFound; else notFound" class="card">
     <mat-card-header>
       <mat-card-title>
-        {{ entry.tagsId.title }}
+        {{ entry.title }}
         <button
           mat-button
           [color]="color"
@@ -20,6 +20,14 @@
       <p>{{ entry.text }}</p>
     </mat-card-content>
     <mat-card-actions>
+      <button
+        mat-raised-button
+        color="primary"
+        mat-button
+        [routerLink]="['/entries/change/', entry._id]"
+      >
+        CHANGE
+      </button>
       <button mat-raised-button color="warn" mat-button (click)="onDelete()">
         DELETE
       </button>

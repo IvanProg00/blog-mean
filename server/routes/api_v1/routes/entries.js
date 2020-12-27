@@ -14,10 +14,12 @@ const {
   TAG_NOT_FOUND,
   TAG_DELETED,
   ENTRY_NOT_FOUND,
+  ENTRY_CANT_DELETED,
   USER_NOT_FOUND,
 } = require("../../../messages");
+const { ROOT_PRIVELEGES } = require("../../../config");
 
-const schemaFields = ["title", "text"];
+const schemaFields = ["_id", "title", "text", "tagsId"];
 const schemaFieldsOnSave = ["usersId", "tagsId"];
 const showEntriesFields = { __v: 0 };
 const showUserFields = { __v: 0, password: 0 };
@@ -140,13 +142,17 @@ router.put("/:id", async (req, res) => {
 
   const updateEntry = createObjOfSchema(schemaFields, req);
 
-  Entries.findByIdAndUpdate(id, { $set: updateEntry }, (err, entry) => {
-    if (err) {
-      res.json(sendJSONError(err));
-      return;
+  Entries.findByIdAndUpdate(
+    updateEntry._id,
+    { $set: updateEntry },
+    (err, entry) => {
+      if (err) {
+        res.json(sendJSONError(err));
+        return;
+      }
+      res.json(sendJSON(ENTRY_CHANGED));
     }
-    res.json(sendJSON(ENTRY_CHANGED));
-  });
+  );
 });
 
 router.delete("/:id", async (req, res) => {
@@ -154,6 +160,13 @@ router.delete("/:id", async (req, res) => {
   if (!user) {
     return;
   }
+
+  if (user.privelages < ROOT_PRIVELEGES) {
+    res.status(400);
+    res.json(sendJSONError(ENTRY_CANT_DELETED));
+    return;
+  }
+
   const id = req.params?.id;
 
   Entries.findByIdAndDelete(id, (err, entry) => {

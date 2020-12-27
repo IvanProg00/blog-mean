@@ -17,7 +17,7 @@ import { EntriesService } from '../entries.service';
   styleUrls: ['./add-entries.component.scss'],
 })
 export class AddEntriesComponent implements OnInit {
-  public entrieForm: FormGroup;
+  public entryForm: FormGroup;
   public addEntrie: AddEntry = {
     title: '',
     text: '',
@@ -39,7 +39,7 @@ export class AddEntriesComponent implements OnInit {
       this.router.navigate(['/']);
     }
 
-    this.entrieForm = new FormGroup({
+    this.entryForm = new FormGroup({
       title: new FormControl(this.addEntrie.title, [Validators.required]),
       text: new FormControl(this.addEntrie.text, [Validators.required]),
       tagsId: new FormControl(this.addEntrie.tagsId, [Validators.required]),
@@ -57,26 +57,26 @@ export class AddEntriesComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    if (!this.entrieForm.invalid) {
-      this.entriesService.createEntry(this.entrieForm.value).subscribe((_: Response) => {
+    if (!this.entryForm.invalid) {
+      this.entriesService.createEntry(this.entryForm.value).subscribe((_: Response) => {
         this.router.navigate(["/"])
       });
     }
   }
 
   get title(): AbstractControl {
-    return this.entrieForm.get('title');
+    return this.entryForm.get('title');
   }
 
   get text(): AbstractControl {
-    return this.entrieForm.get('text');
+    return this.entryForm.get('text');
   }
 
   get tagsId(): AbstractControl {
-    return this.entrieForm.get('tagsId');
+    return this.entryForm.get('tagsId');
   }
 
   get usersId(): AbstractControl {
-    return this.entrieForm.get('usersId');
+    return this.entryForm.get('usersId');
   }
 }

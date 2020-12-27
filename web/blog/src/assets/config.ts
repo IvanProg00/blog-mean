@@ -11,6 +11,8 @@ const BG_COLOR: string = 'primary';
 
 const ROOT_PRIVELEGES: number = 2;
 
+const MESSAGE_DURATION: number = 1500;
+
 export {
   apiUrlUsers,
   apiUrlEntries,
@@ -19,4 +21,5 @@ export {
   // INVALID_FORM,
   BG_COLOR,
   ROOT_PRIVELEGES,
+  MESSAGE_DURATION,
 };

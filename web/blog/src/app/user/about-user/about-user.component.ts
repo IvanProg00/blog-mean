@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Response, User } from 'src/app/interfaces';
+import { MESSAGE_DURATION } from 'src/assets/config';
 import { UserService } from '../user.service';
 
 @Component({
@@ -69,13 +70,13 @@ export class AboutUserComponent implements OnInit {
 
         this.router.navigate(['/']);
         this._snackBar.open('User Deleted', undefined, {
-          duration: this.messageDuration,
+          duration: MESSAGE_DURATION,
         });
       },
       (err: HttpErrorResponse) => {
         console.error(err);
         this._snackBar.open("You can't delete this user.", undefined, {
-          duration: this.messageDuration,
+          duration: MESSAGE_DURATION,
         });
       }
     );

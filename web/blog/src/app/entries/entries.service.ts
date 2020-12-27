@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { apiUrlEntries } from '../../assets/config';
 import { Observable } from 'rxjs';
-import { Entry } from '../interfaces';
+import { ChangeEntry, Entry } from '../interfaces';
 import { UserService } from '../user/user.service';
 
 @Injectable({
@@ -21,6 +21,13 @@ export class EntriesService {
 
   public createEntry(entrie: Entry): Observable<any> {
     return this.http.post<any>(apiUrlEntries, entrie);
+  }
+
+  public changeEntry (entry: ChangeEntry): Observable<any> {
+    return this.http.put(`${apiUrlEntries}/${entry._id}`, {
+      ...entry,
+      token: this.userService.getToken(),
+    });
   }
 
   public deleteEntry(id: string): Observable<any> {

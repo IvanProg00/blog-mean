@@ -11,11 +11,13 @@ module.exports = {
   TAG_NOT_FOUND: "Tag Not Found",
   TAG_DELETED: "Tag Deleted",
   TAG_CHANGED: "Tag Changed",
+  TAG_CANT_DELETED: "You can't delete this tag",
 
   ENTRY_CREATED: "Created",
   ENTRY_NOT_FOUND: "Tag Not Found",
   ENTRY_DELETED: "Tag Deleted",
   ENTRY_CHANGED: "Entry Changed",
+  ENTRY_CANT_DELETED: "You can't delete this entry",
 
   SIGN_IN: "Logined",
 

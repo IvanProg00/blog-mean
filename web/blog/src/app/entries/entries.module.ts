@@ -7,9 +7,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AboutEntriesComponent } from './about-entries/about-entries.component';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
+import { ChangeEntriesComponent } from './change-entries/change-entries.component';
 
 @NgModule({
-  declarations: [AllEntriesComponent, AddEntriesComponent, AboutEntriesComponent],
+  declarations: [AllEntriesComponent, AddEntriesComponent, AboutEntriesComponent, ChangeEntriesComponent],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule, FormsModule, RouterModule, SharedModule],
 })
 export class EntriesModule {}

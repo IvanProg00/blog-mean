@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Response, Entry } from 'src/app/interfaces';
-import { BG_COLOR } from 'src/assets/config';
+import { BG_COLOR, MESSAGE_DURATION } from 'src/assets/config';
 import { EntriesService } from '../entries.service';
 
 @Component({
@@ -12,7 +12,6 @@ import { EntriesService } from '../entries.service';
   styleUrls: ['./about-entries.component.scss'],
 })
 export class AboutEntriesComponent implements OnInit {
-  private messageDuration: number = 1500;
   public color: string = BG_COLOR;
   public entry: Entry = {
     _id: '',
@@ -64,15 +63,17 @@ export class AboutEntriesComponent implements OnInit {
       (_: Response) => {
         this.router.navigate(['/']);
         this._snackBar.open('Entry Deleted.', undefined, {
-          duration: this.messageDuration,
+          duration: MESSAGE_DURATION,
         });
       },
       (err: HttpErrorResponse) => {
         console.error(err);
         this._snackBar.open("You can't delete this entry.", undefined, {
-          duration: this.messageDuration,
+          duration: MESSAGE_DURATION,
         });
       }
     );
   }
+
+
 }

@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { apiUrlTags } from 'src/assets/config';
 import { AddTag } from 'src/app/interfaces';
+import { UserService } from '../user/user.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TagsService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private userService: UserService) {}
 
   public getAllTags(): Observable<any> {
     return this.http.get(apiUrlTags);
@@ -19,6 +20,11 @@ export class TagsService {
   }
 
   public deleteTag(id: string): Observable<any> {
-    return this.http.delete(`${apiUrlTags}/${id}`);
+    const token = this.userService.getToken();
+    return this.http.request<string>("delete", `${apiUrlTags}/${id}`, {
+      body: {
+
+      }
+    });
   }
 }

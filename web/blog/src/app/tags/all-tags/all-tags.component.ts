@@ -4,7 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Response, Tag, User } from 'src/app/interfaces';
 import { UserService } from 'src/app/user/user.service';
-import { ROOT_PRIVELEGES } from 'src/assets/config';
+import { MESSAGE_DURATION, ROOT_PRIVELEGES } from 'src/assets/config';
 import { TagsService } from '../tags.service';
 
 @Component({
@@ -63,10 +63,14 @@ export class AllTagsComponent implements OnInit {
   public onDelete(id: string) {
     this.tagsService.deleteTag(id).subscribe((res: Response) => {
       this.setTags();
-      console.log(res.data);
       this._snackBar.open('Tag Deleted', undefined, {
-        duration: 1500,
+        duration: MESSAGE_DURATION,
       });
+    }, (err: HttpErrorResponse) => {
+      console.error(err);
+      this._snackBar.open('Tag can\'t be deleted', undefined, {
+        duration: MESSAGE_DURATION
+      })
     });
   }
 }
