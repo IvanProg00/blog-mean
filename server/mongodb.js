@@ -6,7 +6,7 @@ const {
   MONGODB_HOST,
   MONGODB_PORT,
   MONGODB_DB,
-} = require("./config");
+} = require("./config/config");
 
 mongoose.connect(
   `mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_PORT}/${MONGODB_DB}`,
@@ -16,12 +16,5 @@ mongoose.connect(
   }
 );
 
-mongoose.connection
-  .on("error", (err) => {
-    console.error(err);
-  })
-  .once("open", () => {
-    console.log("Mongodb is working...");
-  });
 
 module.exports = mongoose;

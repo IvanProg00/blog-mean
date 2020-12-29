@@ -30,6 +30,11 @@ export interface AddTag {
   token: string;
 }
 
+export interface ChangeTag {
+  _id: string;
+  title: string;
+}
+
 export interface User {
   _id: string;
   username: string;

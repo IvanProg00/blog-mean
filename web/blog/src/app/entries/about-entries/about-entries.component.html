@@ -21,14 +21,14 @@
     </mat-card-content>
     <mat-card-actions>
       <button
-        mat-raised-button
-        color="primary"
+        mat-flat-button
         mat-button
+        color="primary"
         [routerLink]="['/entries/change/', entry._id]"
       >
         CHANGE
       </button>
-      <button mat-raised-button color="warn" mat-button (click)="onDelete()">
+      <button mat-flat-button mat-button color="warn" (click)="onDelete()">
         DELETE
       </button>
     </mat-card-actions>

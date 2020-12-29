@@ -19,17 +19,23 @@ import { EntriesService } from '../entries.service';
   styleUrls: ['./change-entries.component.scss'],
 })
 export class ChangeEntriesComponent implements OnInit {
-  public entry: ChangeEntry = {
+  public error: string = undefined;
+  private entry: ChangeEntry = {
     _id: '',
     title: '',
     text: '',
     tagsId: {
-      _id: null,
+      _id: '',
       title: '',
     },
   };
-  public error: string = undefined;
-  public entryForm: FormGroup;
+  public entryForm: FormGroup = new FormGroup({
+      _id: new FormControl(this.entry._id),
+      title: new FormControl(this.entry.title, [Validators.required]),
+      text: new FormControl(this.entry.text, [Validators.required]),
+      tagsId: new FormControl(this.entry.tagsId._id, [Validators.required]),
+    });
+
   public allTags: Tag[];
 
   constructor(
@@ -41,13 +47,6 @@ export class ChangeEntriesComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.entryForm = new FormGroup({
-      _id: new FormControl(this.entry._id),
-      title: new FormControl(this.entry.title, [Validators.required]),
-      text: new FormControl(this.entry.text, [Validators.required]),
-      tagsId: new FormControl(this.entry.tagsId, [Validators.required]),
-    });
-
     this.activatedRoute.params.subscribe((params: Params) => {
       this.createEntryForm(params.id);
     });

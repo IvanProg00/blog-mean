@@ -1,0 +1,25 @@
+<mat-card class="form-card">
+  <mat-card-header>
+    <mat-card-title>Add Tag</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form (submit)="onSubmit()" [formGroup]="tagForm">
+      <span *ngIf="error" class="red err-mess">{{ error }}</span>
+      <mat-form-field class="field">
+        <mat-label>Title</mat-label>
+        <input matInput formControlName="title" name="username" />
+        <mat-error *ngIf="title?.errors?.required">Title is required</mat-error>
+      </mat-form-field>
+      <button
+        class="submit-btn"
+        color="primary"
+        mat-raised-button
+        type="submit"
+      >
+        Add Tag
+      </button>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+

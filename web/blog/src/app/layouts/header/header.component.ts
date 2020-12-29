@@ -29,6 +29,9 @@ export class HeaderComponent implements OnInit, DoCheck {
       this.user = res.data;
       this.userService.setUser(this.user);
       this.userService.setRegistred();
+    }, (err: HttpErrorResponse) => {
+      console.error(err);
+      this.userService.dropToken();
     });
   }
 

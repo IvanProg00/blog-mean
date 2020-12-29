@@ -9,6 +9,7 @@ import { AddTagsComponent } from './tags/add-tags/add-tags.component';
 import { AboutUserComponent } from './user/about-user/about-user.component';
 import { AllTagsComponent } from './tags/all-tags/all-tags.component';
 import { ChangeEntriesComponent } from './entries/change-entries/change-entries.component';
+import { ChangeTagsComponent } from './tags/change-tags/change-tags.component';
 
 const routes: Routes = [
   { path: '', component: AllEntriesComponent, pathMatch: 'full' },
@@ -22,6 +23,7 @@ const routes: Routes = [
 
   { path: 'tags', component: AllTagsComponent },
   { path: 'tags/create', component: AddTagsComponent },
+  { path: 'tags/change/:id', component: ChangeTagsComponent },
 ];
 
 @NgModule({
