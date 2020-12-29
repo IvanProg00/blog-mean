@@ -2,14 +2,30 @@
 
 ## Run Project
 
-### Production
+### Installation
 
-~~~bash
-docker-compose -f docker-compose.prod.yml -f docker-compose.yml up --build
-~~~
+- [Docker](https://www.docker.com/get-started)
 
-### Development
+### Run commands on terminal
 
-~~~bash
-docker-compose -f docker-compose.dev.yml -f docker-compose.yml up --build
-~~~
+#### On Mac/Linux
+
+```bash
+# Production
+make
+# or
+make prod
+
+# Development
+made dev
+```
+
+#### On Windows
+
+```bash
+# Production
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+
+# Development
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+```
