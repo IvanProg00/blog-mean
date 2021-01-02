@@ -10,6 +10,8 @@ import { AboutUserComponent } from './user/about-user/about-user.component';
 import { AllTagsComponent } from './tags/all-tags/all-tags.component';
 import { ChangeEntriesComponent } from './entries/change-entries/change-entries.component';
 import { ChangeTagsComponent } from './tags/change-tags/change-tags.component';
+import { NotFoundComponent } from './shared/not-found/not-found.component';
+import { ChangeUserComponent } from './user/change-user/change-user.component';
 
 const routes: Routes = [
   { path: '', component: AllEntriesComponent, pathMatch: 'full' },
@@ -20,10 +22,13 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'user/about/:id', component: AboutUserComponent },
+  { path: 'user/change/:id', component: ChangeUserComponent },
 
   { path: 'tags', component: AllTagsComponent },
   { path: 'tags/create', component: AddTagsComponent },
   { path: 'tags/change/:id', component: ChangeTagsComponent },
+
+  { path: '**', component: NotFoundComponent },
 ];
 
 @NgModule({

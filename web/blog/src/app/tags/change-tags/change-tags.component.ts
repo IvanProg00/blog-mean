@@ -1,5 +1,4 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { rendererTypeName } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
 import {
   AbstractControl,
@@ -7,11 +6,11 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { ChangeTag, Response } from 'src/app/interfaces';
+import { SnackBarService } from 'src/app/shared/snack-bar/snack-bar.service';
 import { UserService } from 'src/app/user/user.service';
-import { MESSAGE_DURATION, ROOT_PRIVELEGES } from 'src/assets/config';
+import { ROOT_PRIVELEGES } from 'src/assets/config';
 import { TagsService } from '../tags.service';
 
 @Component({
@@ -20,7 +19,6 @@ import { TagsService } from '../tags.service';
   styleUrls: ['./change-tags.component.scss'],
 })
 export class ChangeTagsComponent implements OnInit {
-  public error: string = '';
   private tag: ChangeTag = {
     _id: '',
     title: '',
@@ -35,7 +33,7 @@ export class ChangeTagsComponent implements OnInit {
     private userService: UserService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private _snackBar: MatSnackBar
+    private _snackBarService: SnackBarService
   ) {}
 
   ngOnInit(): void {
@@ -49,6 +47,7 @@ export class ChangeTagsComponent implements OnInit {
       (res: Response) => {
         const privalages = res.data?.privelages;
         if (privalages < ROOT_PRIVELEGES) {
+          this._snackBarService.error("You can't be here.");
           this.router.navigate(['/']);
           return;
         }
@@ -58,6 +57,8 @@ export class ChangeTagsComponent implements OnInit {
       },
       (err: HttpErrorResponse) => {
         console.error(err);
+        this._snackBarService.error('Your Account Not Found.');
+        this.userService.dropToken();
         this.router.navigate(['/']);
       }
     );
@@ -77,18 +78,20 @@ export class ChangeTagsComponent implements OnInit {
 
   public onSubmit(): void {
     this.tagService.changeTag(this.tagForm.value).subscribe(
-      (res: Response) => {
+      (_: Response) => {
         this.router.navigate(['/tags']);
-        this._snackBar.open('Tag Changed', undefined, {
-          duration: MESSAGE_DURATION,
-        });
+        this._snackBarService.success('Tag Changed.');
       },
       (err: HttpErrorResponse) => {
         console.error(err);
-        this.router.navigate(['/tags']);
-        this._snackBar.open("You can't change this tag", undefined, {
-          duration: MESSAGE_DURATION,
-        });
+        if (err.status === 0) {
+          this._snackBarService.error("You can't change this tag");
+          this.router.navigate(['/tags']);
+        } else {
+          if (err?.error?.error?.error?.title) {
+            this.title.setErrors({ title: err?.error?.error?.error?.title });
+          }
+        }
       }
     );
   }

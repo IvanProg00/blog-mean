@@ -1,1 +1,10 @@
-<p>snack-bar works!</p>
+<div class="snackbar-component">
+  <span
+    [ngClass]="{
+      'snackbar-success': data.type === 'success',
+      'snackbar-error': data.type === 'error'
+    }"
+    >{{ data.mess }}</span
+  >
+  <button mat-flat-button color="warn" (click)="onClose()">Close</button>
+</div>

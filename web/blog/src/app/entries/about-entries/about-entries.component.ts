@@ -1,9 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Response, Entry } from 'src/app/interfaces';
-import { BG_COLOR, MESSAGE_DURATION } from 'src/assets/config';
+import { SnackBarService } from 'src/app/shared/snack-bar/snack-bar.service';
+import { BG_COLOR } from 'src/assets/config';
 import { EntriesService } from '../entries.service';
 
 @Component({
@@ -35,7 +35,7 @@ export class AboutEntriesComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private entriesService: EntriesService,
     private router: Router,
-    private _snackBar: MatSnackBar
+    private _snackBarService: SnackBarService
   ) {}
 
   ngOnInit() {
@@ -61,19 +61,13 @@ export class AboutEntriesComponent implements OnInit {
   public onDelete(): void {
     this.entriesService.deleteEntry(this.entry._id).subscribe(
       (_: Response) => {
+        this._snackBarService.success('Entry Deleted.');
         this.router.navigate(['/']);
-        this._snackBar.open('Entry Deleted.', undefined, {
-          duration: MESSAGE_DURATION,
-        });
       },
       (err: HttpErrorResponse) => {
         console.error(err);
-        this._snackBar.open("You can't delete this entry.", undefined, {
-          duration: MESSAGE_DURATION,
-        });
+        this._snackBarService.error("You Can't Delete This Entry.");
       }
     );
   }
-
-
 }

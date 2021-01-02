@@ -4,11 +4,13 @@
   </mat-card-header>
   <mat-card-content>
     <form (submit)="onSubmit()" [formGroup]="tagForm">
-      <span *ngIf="error" class="red err-mess">{{ error }}</span>
       <mat-form-field class="field">
         <mat-label>Title</mat-label>
         <input matInput formControlName="title" name="username" />
         <mat-error *ngIf="title?.errors?.required">Title is required</mat-error>
+        <mat-error *ngIf="title?.errors?.other">{{
+          title?.errors?.other
+        }}</mat-error>
       </mat-form-field>
       <button
         class="submit-btn"
@@ -21,5 +23,3 @@
     </form>
   </mat-card-content>
 </mat-card>
-
-

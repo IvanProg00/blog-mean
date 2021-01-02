@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AddTag, Response, User } from 'src/app/interfaces';
+import { SnackBarService } from 'src/app/shared/snack-bar/snack-bar.service';
 import { UserService } from 'src/app/user/user.service';
 import { ROOT_PRIVELEGES } from 'src/assets/config';
 import { TagsService } from '../tags.service';
@@ -19,7 +20,6 @@ import { TagsService } from '../tags.service';
 })
 export class AddTagsComponent implements OnInit {
   public tagForm: FormGroup;
-  public error: string = '';
   private tag: AddTag = {
     title: '',
     token: '',
@@ -28,7 +28,8 @@ export class AddTagsComponent implements OnInit {
   constructor(
     private tagsService: TagsService,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private _snackBarService: SnackBarService
   ) {}
 
   ngOnInit(): void {
@@ -53,10 +54,19 @@ export class AddTagsComponent implements OnInit {
     if (!this.tagForm.invalid) {
       this.tagsService.createTag(this.tagForm.value).subscribe(
         (_: Response) => {
+          this._snackBarService.success('Tag Created.');
           this.router.navigate(['/']);
         },
         (err: HttpErrorResponse) => {
-          this.error = err.message;
+          console.error(err);
+          if (err.status === 0) {
+            this._snackBarService.error("You Can't Create A Tag.");
+            this.router.navigate(['/']);
+          } else {
+            if (err?.error?.error?.error?.title) {
+              this.title.setErrors({ title: err?.error?.error?.error?.title });
+            }
+          }
         }
       );
     }

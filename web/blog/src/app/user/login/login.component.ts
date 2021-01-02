@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Response, UserLogin } from 'src/app/interfaces';
+import { SnackBarService } from 'src/app/shared/snack-bar/snack-bar.service';
 import { UserService } from '../user.service';
 
 @Component({
@@ -23,7 +24,11 @@ export class LoginComponent implements OnInit {
   public loginForm: FormGroup;
   public error: string = '';
 
-  constructor(private router: Router, private userService: UserService) {}
+  constructor(
+    private router: Router,
+    private userService: UserService,
+    private _snackBarService: SnackBarService
+  ) {}
 
   ngOnInit() {
     this.loginForm = new FormGroup({
@@ -37,13 +42,20 @@ export class LoginComponent implements OnInit {
       this.error = null;
     } else {
       this.userService.loginUser(this.loginForm.value).subscribe(
-        (data: Response) => {
-          this.userService.setToken(data);
+        (res: Response) => {
+          this.userService.setToken(res);
           this.userService.setUserByToken();
+          this._snackBarService.success('You Are Logined.');
           this.router.navigate(['/']);
         },
         (err: HttpErrorResponse) => {
-          this.error = err.error?.error;
+          console.error(err);
+          if (err.status === 0) {
+            this._snackBarService.error("You Can't Login At The Moment.");
+            this.router.navigate(['/']);
+          } else {
+            this.error = err.error?.error;
+          }
         }
       );
     }

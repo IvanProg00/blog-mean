@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Entry, Response } from 'src/app/interfaces';
 import { BG_COLOR } from 'src/assets/config';
@@ -21,7 +22,8 @@ export class AllEntriesComponent implements OnInit {
         this.entries = a.data;
         this.isLoading = false;
       },
-      (_: Response) => {
+      (err: HttpErrorResponse) => {
+        console.error(err);
         this.isLoading = false;
       }
     );

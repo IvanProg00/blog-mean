@@ -6,11 +6,10 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { ChangeEntry, Tag, Response } from 'src/app/interfaces';
+import { SnackBarService } from 'src/app/shared/snack-bar/snack-bar.service';
 import { TagsService } from 'src/app/tags/tags.service';
-import { MESSAGE_DURATION } from 'src/assets/config';
 import { EntriesService } from '../entries.service';
 
 @Component({
@@ -30,11 +29,11 @@ export class ChangeEntriesComponent implements OnInit {
     },
   };
   public entryForm: FormGroup = new FormGroup({
-      _id: new FormControl(this.entry._id),
-      title: new FormControl(this.entry.title, [Validators.required]),
-      text: new FormControl(this.entry.text, [Validators.required]),
-      tagsId: new FormControl(this.entry.tagsId._id, [Validators.required]),
-    });
+    _id: new FormControl(this.entry._id),
+    title: new FormControl(this.entry.title, [Validators.required]),
+    text: new FormControl(this.entry.text, [Validators.required]),
+    tagsId: new FormControl(this.entry.tagsId._id, [Validators.required]),
+  });
 
   public allTags: Tag[];
 
@@ -43,18 +42,28 @@ export class ChangeEntriesComponent implements OnInit {
     private entriesService: EntriesService,
     private tagsService: TagsService,
     private router: Router,
-    private _snackBar: MatSnackBar
+    private _snackBarService: SnackBarService
   ) {}
 
   ngOnInit() {
     this.activatedRoute.params.subscribe((params: Params) => {
       this.createEntryForm(params.id);
+
+      this.tagsService.getAllTags().subscribe(
+        (res: Response) => {
+          this.allTags = res.data;
+          this.createEntryForm(params.id);
+        },
+        (err: HttpErrorResponse) => {
+          console.error(err);
+          this._snackBarService.error("Can't Load Tags.");
+          this.router.navigate(['/']);
+        }
+      );
     });
   }
 
   private createEntryForm(id: string): void {
-    this.setAllTags();
-
     this.entriesService.getEntry(id).subscribe(
       (res: Response) => {
         this.entry = res.data;
@@ -66,18 +75,7 @@ export class ChangeEntriesComponent implements OnInit {
       },
       (err: HttpErrorResponse) => {
         console.error(err);
-        this.router.navigate(['/']);
-      }
-    );
-  }
-
-  private setAllTags(): void {
-    this.tagsService.getAllTags().subscribe(
-      (res: Response) => {
-        this.allTags = res.data;
-      },
-      (err: HttpErrorResponse) => {
-        console.error(err);
+        this._snackBarService.error("Can't Load An Entry.");
         this.router.navigate(['/']);
       }
     );
@@ -86,16 +84,25 @@ export class ChangeEntriesComponent implements OnInit {
   public onSubmit() {
     this.entriesService.changeEntry(this.entryForm.value).subscribe(
       (_: Response) => {
-        this.router.navigate(['/entries/about', this.entry._id]);
-        this._snackBar.open('Entry Changed', undefined, {
-          duration: MESSAGE_DURATION,
-        });
+        this._snackBarService.success('Entry Changed.');
+        this.router.navigate(['entries/about', this.entry._id]);
       },
       (err: HttpErrorResponse) => {
-        this._snackBar.open('You can\'t change this entry', undefined, {
-          duration: MESSAGE_DURATION,
-        });
         console.error(err);
+        if (err.status === 0) {
+          this._snackBarService.error("Can't Be Changed This Entry.");
+          this.router.navigate(['/entries/about', this._id.value]);
+        } else {
+          if (err.error?.error?.title) {
+            this.title.setErrors({ other: err.error?.error?.title });
+          }
+          if (err.error?.error?.text) {
+            this.text.setErrors({ other: err.error?.error?.text });
+          }
+          if (err.error?.error?.tagsId) {
+            this.tagsId.setErrors({ other: err.error?.error?.password });
+          }
+        }
       }
     );
   }

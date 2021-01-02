@@ -1,10 +1,10 @@
-import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Response, Tag, User } from 'src/app/interfaces';
+import { SnackBarService } from 'src/app/shared/snack-bar/snack-bar.service';
 import { UserService } from 'src/app/user/user.service';
-import { MESSAGE_DURATION, ROOT_PRIVELEGES } from 'src/assets/config';
+import { ROOT_PRIVELEGES } from 'src/assets/config';
 import { TagsService } from '../tags.service';
 
 @Component({
@@ -25,7 +25,7 @@ export class AllTagsComponent implements OnInit {
   constructor(
     private tagsService: TagsService,
     private userService: UserService,
-    private _snackBar: MatSnackBar,
+    private _snackBarService: SnackBarService,
     private router: Router
   ) {}
 
@@ -54,23 +54,22 @@ export class AllTagsComponent implements OnInit {
       },
       (err: HttpErrorResponse) => {
         console.error(err);
-        this.tags = [];
-        this.isLoaded = true;
+        this._snackBarService.error("Can't Load Tags.");
+        this.router.navigate(['/']);
       }
     );
   }
 
   public onDelete(id: string) {
-    this.tagsService.deleteTag(id).subscribe((res: Response) => {
-      this.setTags();
-      this._snackBar.open('Tag Deleted', undefined, {
-        duration: MESSAGE_DURATION,
-      });
-    }, (err: HttpErrorResponse) => {
-      console.error(err);
-      this._snackBar.open('Tag can\'t be deleted', undefined, {
-        duration: MESSAGE_DURATION
-      })
-    });
+    this.tagsService.deleteTag(id).subscribe(
+      (res: Response) => {
+        this.setTags();
+        this._snackBarService.success('Tag Deleted');
+      },
+      (err: HttpErrorResponse) => {
+        console.error(err);
+        this._snackBarService.error("Tag can't be deleted");
+      }
+    );
   }
 }

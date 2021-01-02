@@ -75,16 +75,25 @@ const createUser = (req, res) => {
   });
 };
 
-const changeUser = (req, res) => {
-  const id = validateAuthorized(req.params?.token, res);
-  if (!id) return;
+const changeUser = async (req, res) => {
+  const tokenId = await validateAuthorized(req.body?.token, res);
+  if (!tokenId) return;
+
+  const id = req.params?.id;
+  if (tokenId !== id) {
+    res.status(400);
+    res.json(sendJSONError(USER_CANT_DELETED));
+    return;
+  }
   const updateUser = createObjOfSchema(schemaFields, req);
 
   Users.findByIdAndUpdate(id, { $set: updateUser }, (err) => {
     if (err) {
+      res.status(400);
       res.json(sendJSONError(err));
       return;
     }
+    res.status(200);
     res.json(sendJSON(USER_CHANGED));
   });
 };

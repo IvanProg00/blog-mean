@@ -63,3 +63,8 @@ export interface Response {
   data?: any;
   error?: any;
 }
+
+export interface SnackBarData {
+  mess: string;
+  type: 'success' | 'error';
+}

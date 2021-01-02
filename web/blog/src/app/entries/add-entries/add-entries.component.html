@@ -4,16 +4,21 @@
   </mat-card-header>
   <mat-card-content>
     <form (submit)="onSubmit()" [formGroup]="entryForm">
-      <span *ngIf="error" class="red err-mess">{{ error }}</span>
       <mat-form-field class="field">
         <mat-label>Title</mat-label>
         <input matInput formControlName="title" name="username" />
         <mat-error *ngIf="title?.errors?.required">Title is required</mat-error>
+        <mat-error *ngIf="title?.errors?.other">{{
+          title?.errors?.other
+        }}</mat-error>
       </mat-form-field>
       <mat-form-field class="field">
         <mat-label>Text</mat-label>
         <textarea matInput formControlName="text" name="password"></textarea>
         <mat-error *ngIf="text?.errors?.required">Text is required</mat-error>
+        <mat-error *ngIf="text?.errors?.other">{{
+          text?.errors?.other
+        }}</mat-error>
       </mat-form-field>
       <mat-form-field class="field">
         <mat-label>Tag</mat-label>
@@ -22,8 +27,16 @@
             tag.title
           }}</mat-option>
         </mat-select>
+        <mat-error *ngIf="tagsId?.errors?.other">{{
+          tagsId?.errors?.other
+        }}</mat-error>
       </mat-form-field>
-      <button class="submit-btn" color="primary" mat-raised-button type="submit">
+      <button
+        class="submit-btn"
+        color="primary"
+        mat-raised-button
+        type="submit"
+      >
         ADD ENTRY
       </button>
     </form>

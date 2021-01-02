@@ -7,19 +7,44 @@
       <mat-form-field class="field">
         <mat-label>Username</mat-label>
         <input matInput formControlName="username" name="username" />
-        <mat-error *ngIf="username?.errors?.required">Username is required</mat-error>
+        <mat-error *ngIf="username?.errors?.required"
+          >Username is required</mat-error
+        >
+        <mat-error *ngIf="username?.errors?.other">{{
+          username?.errors?.other
+        }}</mat-error>
       </mat-form-field>
       <mat-form-field class="field">
         <mat-label>Email</mat-label>
         <input matInput formControlName="email" name="email" />
         <mat-error *ngIf="email?.errors?.required">Email is required</mat-error>
+        <mat-error *ngIf="email?.errors?.other">{{
+          email?.errors?.other
+        }}</mat-error>
       </mat-form-field>
       <mat-form-field class="field">
         <mat-label>Password</mat-label>
-        <input matInput formControlName="password" name="password" type="password" />
-        <mat-error *ngIf="password?.errors?.required">Password is required</mat-error>
+        <input
+          matInput
+          formControlName="password"
+          name="password"
+          type="password"
+        />
+        <mat-error *ngIf="password?.errors?.required"
+          >Password is required</mat-error
+        >
+        <mat-error *ngIf="password?.errors?.other">{{
+          password?.errors?.other
+        }}</mat-error>
       </mat-form-field>
-      <button class="submit-btn" color="primary" mat-raised-button type="submit">REGISTER</button>
+      <button
+        class="submit-btn"
+        color="primary"
+        mat-raised-button
+        type="submit"
+      >
+        REGISTER
+      </button>
     </form>
   </mat-card-content>
 </mat-card>

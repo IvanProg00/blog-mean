@@ -10,6 +10,15 @@
     </mat-card-content>
     <mat-card-actions>
       <button
+        *ngIf="canChange"
+        mat-flat-button
+        mat-button
+        color="primary"
+        [routerLink]="['/user/change/', user._id]"
+      >
+        CHANGE
+      </button>
+      <button
         *ngIf="canDelete"
         mat-raised-button
         color="warn"

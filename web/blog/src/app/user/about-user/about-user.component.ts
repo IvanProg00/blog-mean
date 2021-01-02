@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Response, User } from 'src/app/interfaces';
+import { SnackBarService } from 'src/app/shared/snack-bar/snack-bar.service';
 import { MESSAGE_DURATION } from 'src/assets/config';
 import { UserService } from '../user.service';
 
@@ -12,7 +13,6 @@ import { UserService } from '../user.service';
   styleUrls: ['./about-user.component.scss'],
 })
 export class AboutUserComponent implements OnInit {
-  private messageDuration: number = 1500;
   public user: User = {
     _id: '',
     email: '',
@@ -22,16 +22,18 @@ export class AboutUserComponent implements OnInit {
   public isRegistred: boolean = false;
   public isLoaded: boolean = false;
   public canDelete: boolean = false;
+  public canChange: boolean = false;
 
   constructor(
     private userService: UserService,
     private router: Router,
-    private _snackBar: MatSnackBar,
+    private _snackBarService: SnackBarService,
     private activatedRoute: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     if (!this.userService.getRegistred()) {
+      this._snackBarService.error('You are not Logined.');
       this.router.navigate(['/']);
       return;
     }
@@ -46,21 +48,36 @@ export class AboutUserComponent implements OnInit {
       (res: Response) => {
         this.user = res.data;
         this.isLoaded = true;
-        this.getMeByToken();
+        this.userValidation(id);
       },
       (err: HttpErrorResponse) => {
         console.error(err);
+        this._snackBarService.error('User Not Found.');
         this.router.navigate(['/']);
       }
     );
   }
 
-  private getMeByToken(): void {
-    this.userService.getUserByToken().subscribe((res: Response) => {
-      if (this.user._id === res.data._id) {
-        this.canDelete = true;
-      }
-    });
+  private userValidation(id: string) {
+    const getUser = this.userService.getUserByToken();
+    if (getUser) {
+      getUser.subscribe(
+        (res: Response) => {
+          if (this.user._id === res.data._id) {
+            this.canChange = true;
+            this.canDelete = true;
+          }
+        },
+        (err: HttpErrorResponse) => {
+          console.error(err);
+          this.userService.dropToken();
+        }
+      );
+    }
+    if (this.user._id === id) {
+      this.canChange = true;
+      this.canDelete = true;
+    }
   }
 
   public onDelete() {
@@ -69,15 +86,11 @@ export class AboutUserComponent implements OnInit {
         this.userService.dropToken();
 
         this.router.navigate(['/']);
-        this._snackBar.open('User Deleted', undefined, {
-          duration: MESSAGE_DURATION,
-        });
+        this._snackBarService.success('User Deleted.');
       },
       (err: HttpErrorResponse) => {
         console.error(err);
-        this._snackBar.open("You can't delete this user.", undefined, {
-          duration: MESSAGE_DURATION,
-        });
+        this._snackBarService.error("You Can't Delete This User.");
       }
     );
   }

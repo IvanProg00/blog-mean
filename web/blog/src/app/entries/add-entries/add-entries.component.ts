@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import {
   AbstractControl,
@@ -7,6 +8,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AddEntry, Response, Tag } from 'src/app/interfaces';
+import { SnackBarService } from 'src/app/shared/snack-bar/snack-bar.service';
 import { TagsService } from 'src/app/tags/tags.service';
 import { UserService } from 'src/app/user/user.service';
 import { EntriesService } from '../entries.service';
@@ -24,14 +26,14 @@ export class AddEntriesComponent implements OnInit {
     tagsId: '',
     usersId: '',
   };
-  public error: string = '';
   public allTags: Tag[] = [];
 
   constructor(
     private router: Router,
     private userService: UserService,
     private tagsService: TagsService,
-    private entriesService: EntriesService
+    private entriesService: EntriesService,
+    private _snackBarService: SnackBarService
   ) {}
 
   ngOnInit(): void {
@@ -58,9 +60,29 @@ export class AddEntriesComponent implements OnInit {
 
   public onSubmit(): void {
     if (!this.entryForm.invalid) {
-      this.entriesService.createEntry(this.entryForm.value).subscribe((_: Response) => {
-        this.router.navigate(["/"])
-      });
+      this.entriesService.createEntry(this.entryForm.value).subscribe(
+        (_: Response) => {
+          this._snackBarService.success('Entry Created.');
+          this.router.navigate(['/']);
+        },
+        (err: HttpErrorResponse) => {
+          console.error(err);
+          if (err.status === 0) {
+            this._snackBarService.error("You Can't Create An Entry");
+            this.router.navigate(['/']);
+          } else {
+            if (err.error?.error?.title) {
+              this.title.setErrors({ other: err.error?.error?.title });
+            }
+            if (err.error?.error?.text) {
+              this.text.setErrors({ other: err.error?.error?.text });
+            }
+            if (err.error?.error?.tagsId) {
+              this.tagsId.setErrors({ other: err.error?.error?.password });
+            }
+          }
+        }
+      );
     }
   }
 

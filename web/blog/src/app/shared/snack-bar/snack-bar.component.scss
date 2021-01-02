@@ -1,0 +1,13 @@
+.snackbar-component {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .snackbar- {
+    &success {
+      color: rgb(101, 255, 101);
+    }
+    &error {
+      color: tomato;
+    }
+  }
+}
