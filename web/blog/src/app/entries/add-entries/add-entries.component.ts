@@ -19,13 +19,18 @@ import { EntriesService } from '../entries.service';
   styleUrls: ['./add-entries.component.scss'],
 })
 export class AddEntriesComponent implements OnInit {
-  public entryForm: FormGroup;
   public addEntrie: AddEntry = {
     title: '',
     text: '',
     tagsId: '',
     usersId: '',
   };
+  public entryForm: FormGroup = new FormGroup({
+    title: new FormControl(this.addEntrie.title, [Validators.required]),
+    text: new FormControl(this.addEntrie.text, [Validators.required]),
+    tagsId: new FormControl(this.addEntrie.tagsId, [Validators.required]),
+    usersId: new FormControl(this.addEntrie.usersId),
+  });
   public allTags: Tag[] = [];
 
   constructor(
@@ -41,12 +46,28 @@ export class AddEntriesComponent implements OnInit {
       this.router.navigate(['/']);
     }
 
-    this.entryForm = new FormGroup({
-      title: new FormControl(this.addEntrie.title, [Validators.required]),
-      text: new FormControl(this.addEntrie.text, [Validators.required]),
-      tagsId: new FormControl(this.addEntrie.tagsId, [Validators.required]),
-      usersId: new FormControl(this.addEntrie.usersId),
-    });
+    const getUser = this.userService.getUserByToken();
+    if (!getUser) {
+      this._snackBarService.error('You Are Not Logined.');
+      this.router.navigate(['/']);
+      this.userService.dropToken();
+    }
+    getUser.subscribe(
+      (res: Response) => {
+        this.createForm();
+        this.usersId.setValue(res.data?._id);
+      },
+      (err: HttpErrorResponse) => {
+        console.error(err);
+        this._snackBarService.error("We Can't Find This User.");
+        this.userService.dropToken();
+        this.router.navigate(['/']);
+      }
+    );
+  }
+
+  private createForm(): void {
+    this.entryForm;
 
     this.tagsService.getAllTags().subscribe((res: Response) => {
       this.allTags = res.data;

@@ -1,141 +1,111 @@
-const { sendJSON, sendJSONError } = require("../json_messages");
+const {
+  sendJSON,
+  sendJSONAndToken,
+  sendJSONError,
+} = require("../json_messages");
 const {
   createObjOfSchema,
-  cryptPassword,
   formatErrors,
+  cryptPassword,
 } = require("../functions");
-const { getJWT, validateAuthorized } = require("../authorization");
+const { getJWT } = require("../validators/user");
 const Users = require("../../../models/Users");
 const {
   USER_CREATED,
   INCORRECT_ID,
-  USER_NOT_FOUND,
   USER_DELETED,
   USER_CHANGED,
   USER_CANT_DELETED,
-} = require("../../../messages");
+} = require("../../../config/messages");
+const {
+  OK,
+  BAD_REQUEST,
+  CREATED,
+  DELETED,
+  CHANGED,
+} = require("../../../config/status");
+const {
+  ALL_USERS,
+  ONE_USER,
+  CREATE_USER,
+  CHANGE_USER,
+} = require("../../../config/fields");
 
-const schemaFields = ["username", "password", "email"];
-const showAllFields = { username: 1, email: 1 };
-const showOneField = { __v: 0 };
-
-const getAllUsers = async (req, res) => {
-  const users = await Users.find({}, showAllFields);
+const getAllUsers = async (_, res) => {
+  const users = await Users.find({}, ALL_USERS);
+  res.status(OK);
   res.json(sendJSON(users));
 };
 
 const getUser = async (req, res) => {
   const id = req.params.id;
-  Users.findById(id, showOneField, (err, entry) => {
-    if (err) {
-      res.status(400);
+  Users.findById(id, ONE_USER, (err, user) => {
+    if (err || !user) {
+      res.status(BAD_REQUEST);
       res.json(sendJSONError(INCORRECT_ID));
       return;
     }
-    if (entry) {
-      res.json(sendJSON(entry));
-    } else {
-      res.json(sendJSONError(USER_NOT_FOUND));
-    }
+    res.status(OK);
+    res.json(sendJSON(user));
   });
 };
 
 const createUser = (req, res) => {
-  const newUser = createObjOfSchema(schemaFields, req);
+  const newUser = createObjOfSchema(CREATE_USER, req);
   const user = new Users(newUser);
-
-  let err = user.validateSync();
-  const passwdErr = validatePassword(user.password);
-  if (passwdErr) {
-    if (passwdErr) {
-      if (!err) {
-        err = {
-          errors: {},
-        };
-      }
-      err.errors = { ...passwdErr, ...err.errors };
-    }
-  }
-  if (err) {
-    res.status(400);
-    res.json(sendJSONError(formatErrors(err)));
-    return;
-  }
-  user.password = cryptPassword(newUser?.password.toString());
+  user.password = cryptPassword(user.password);
 
   user.save((err, user) => {
     if (err) {
       err = formatErrors(err);
-      res.status(400);
+      res.status(BAD_REQUEST);
       res.json(sendJSONError(err));
       return;
     }
-    res.status(201);
-    res.json(sendJSON({ message: USER_CREATED, token: getJWT(user._id) }));
+    res.status(CREATED);
+    res.json(sendJSONAndToken(USER_CREATED, getJWT(user._id)));
   });
 };
 
 const changeUser = async (req, res) => {
-  const tokenId = await validateAuthorized(req.body?.token, res);
-  if (!tokenId) return;
-
-  const id = req.params?.id;
+  const id = req.next?.user?._id;
   if (tokenId !== id) {
-    res.status(400);
+    res.status(BAD_REQUEST);
     res.json(sendJSONError(USER_CANT_DELETED));
     return;
   }
-  const updateUser = createObjOfSchema(schemaFields, req);
+  const updateUser = createObjOfSchema(CHANGE_USER, req);
 
-  Users.findByIdAndUpdate(id, { $set: updateUser }, (err) => {
-    if (err) {
-      res.status(400);
+  Users.findByIdAndUpdate(id, { $set: updateUser }, (err, user) => {
+    if (err || !user) {
+      res.status(BAD_REQUEST);
       res.json(sendJSONError(err));
       return;
     }
-    res.status(200);
+    res.status(CHANGED);
     res.json(sendJSON(USER_CHANGED));
   });
 };
 
 const deleteUser = async (req, res) => {
-  const tokenId = await validateAuthorized(req.body?.token, res);
-  if (!tokenId) return;
-
+  const tokenId = req.next?.user?._id.toString();
   const id = req.params?.id;
   if (tokenId !== id) {
-    res.status(400);
+    res.status(BAD_REQUEST);
     res.json(sendJSONError(USER_CANT_DELETED));
     return;
   }
 
   Users.findByIdAndDelete(id, (err, user) => {
-    if (err) {
-      res.status(400);
+    if (err || !user) {
+      res.status(BAD_REQUEST);
       res.json(sendJSONError(err));
       return;
     }
-    if (!user) {
-      res.status(400);
-      res.json(sendJSONError(USER_NOT_FOUND));
-      return;
-    }
-    res.status(200);
+    res.status(DELETED);
     res.json(sendJSON(USER_DELETED));
   });
 };
-
-function validatePassword(pass) {
-  const minPasswordLength = 6;
-  const maxPasswordLength = 18;
-  if (pass < minPasswordLength || pass > maxPasswordLength) {
-    return {
-      password: {
-        kind: `Password must be minimum ${minPasswordLength} and maximum ${maxPasswordLength} length`,
-      },
-    };
-  }
-}
 
 module.exports = {
   getAllUsers,

@@ -6,6 +6,8 @@ const {
   changeEntry,
   deleteEntry,
 } = require("../controllers/entries");
+const { findUserByToken } = require("../validators/user");
+const { isRoot } = require("../validators/priveleges");
 const router = Router();
 
 // GET - get all entries
@@ -15,12 +17,12 @@ router.get("", getAllEntries);
 router.get("/:id", getEntry);
 
 // POST - Create entry
-router.post("", createEntry);
+router.post("", findUserByToken, createEntry);
 
 // PUT - Change entry
-router.put("/:id", changeEntry);
+router.put("/:id", findUserByToken, changeEntry);
 
 // DELETE - Delete entry
-router.delete("/:id", deleteEntry);
+router.delete("/:id", findUserByToken, isRoot, deleteEntry);
 
 module.exports = router;

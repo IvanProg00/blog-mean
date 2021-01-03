@@ -10,6 +10,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { ChangeEntry, Tag, Response } from 'src/app/interfaces';
 import { SnackBarService } from 'src/app/shared/snack-bar/snack-bar.service';
 import { TagsService } from 'src/app/tags/tags.service';
+import { UserService } from 'src/app/user/user.service';
 import { EntriesService } from '../entries.service';
 
 @Component({
@@ -42,10 +43,35 @@ export class ChangeEntriesComponent implements OnInit {
     private entriesService: EntriesService,
     private tagsService: TagsService,
     private router: Router,
-    private _snackBarService: SnackBarService
+    private _snackBarService: SnackBarService,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
+    if (!this.userService.registred) {
+      this.router.navigate(['/']);
+    }
+
+    const getUser = this.userService.getUserByToken();
+    if (!getUser) {
+      this._snackBarService.error('You Are Not Logined.');
+      this.router.navigate(['/']);
+      this.userService.dropToken();
+    }
+    getUser.subscribe(
+      (_: Response) => {
+        this.setTags();
+      },
+      (err: HttpErrorResponse) => {
+        console.error(err);
+        this._snackBarService.error("We Can't Find This User.");
+        this.userService.dropToken();
+        this.router.navigate(['/']);
+      }
+    );
+  }
+
+  private setTags(): void {
     this.activatedRoute.params.subscribe((params: Params) => {
       this.createEntryForm(params.id);
 

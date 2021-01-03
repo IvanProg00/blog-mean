@@ -4,7 +4,13 @@ import {
   HttpErrorResponse,
   HttpHeaders,
 } from '@angular/common/http';
-import { Response, User, UserLogin, UserRegister } from '../interfaces';
+import {
+  ChangeUser,
+  Response,
+  User,
+  UserLogin,
+  UserRegister,
+} from '../interfaces';
 import { apiUrlLogin, apiUrlUsers } from 'src/assets/config';
 import { Observable } from 'rxjs';
 
@@ -109,6 +115,13 @@ export class UserService {
       body: {
         token: this.getToken(),
       },
+    });
+  }
+
+  public changeUser(user: ChangeUser): Observable<any> {
+    return this.http.put(`${apiUrlUsers}/${user._id}`, {
+      ...user,
+      token: this.getToken(),
     });
   }
 }

@@ -42,6 +42,12 @@ export interface User {
   privelages: number;
 }
 
+export interface ChangeUser {
+  _id: string;
+  username: string;
+  email: string;
+}
+
 export interface UserRegister {
   username: string;
   email: string;

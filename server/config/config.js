@@ -10,6 +10,5 @@ module.exports = {
   CRYPT_KEY: "jqygalkczojw",
   JWT_KEY: "pguhw6di6pn3",
 
-  ROOT_PRIVELEGES: 2,
-  CHILD_PRIVELEGES: 1,
+
 };

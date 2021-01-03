@@ -1,9 +1,6 @@
 const crypto = require("crypto");
 const { CRYPT_KEY } = require("../../config/config");
-const { UNIQUE_VALUES, TOKEN_NOT_FOUND } = require("../../messages");
-const Users = require("../../models/Users");
-const { validateAuthorized } = require("./authorization");
-const { sendJSONError } = require("./json_messages");
+const { UNIQUE_VALUES } = require("../../config/messages");
 
 module.exports = {
   createObjOfSchema: (keys, req) => {
@@ -32,23 +29,10 @@ module.exports = {
     }
 
     errors = errors.errors;
-
     for (let key in errors) {
       errorsFormatted[key] = errors[key]?.kind;
     }
 
     return errorsFormatted;
-  },
-  async findUserByToken(token, res) {
-    let user;
-    if (token) {
-      user = await Users.findById(await validateAuthorized(token, res));
-    }
-    if (!user) {
-      res.status(400);
-      res.json(sendJSONError(TOKEN_NOT_FOUND));
-      return;
-    }
-    return user;
   },
 };

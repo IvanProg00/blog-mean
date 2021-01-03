@@ -6,6 +6,8 @@ const {
   changeTag,
   deleteTag,
 } = require("../controllers/tags");
+const { isRoot } = require("../validators/priveleges");
+const { findUserByToken } = require("../validators/user");
 
 const router = Router();
 
@@ -16,12 +18,12 @@ router.get("", getAllTags);
 router.get("/:id", getTag);
 
 // POST - Create tag
-router.post("", createTag);
+router.post("", findUserByToken, isRoot, createTag);
 
 // PUT - Change tag
-router.put("/:id", changeTag);
+router.put("/:id", findUserByToken, isRoot, changeTag);
 
 // DELETE - Delete tag
-router.delete("/:id", deleteTag);
+router.delete("/:id", findUserByToken, isRoot, deleteTag);
 
 module.exports = router;

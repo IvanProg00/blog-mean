@@ -20,10 +20,11 @@ export class EntriesService {
   }
 
   public createEntry(entrie: Entry): Observable<any> {
-    return this.http.post<any>(apiUrlEntries, entrie);
+    const token: string = this.userService.getToken();
+    return this.http.post<any>(apiUrlEntries, { ...entrie, token });
   }
 
-  public changeEntry (entry: ChangeEntry): Observable<any> {
+  public changeEntry(entry: ChangeEntry): Observable<any> {
     return this.http.put(`${apiUrlEntries}/${entry._id}`, {
       ...entry,
       token: this.userService.getToken(),

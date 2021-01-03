@@ -33,7 +33,7 @@ export class TagsService {
   public deleteTag(id: string): Observable<any> {
     const token = this.userService.getToken();
     return this.http.request<string>('delete', `${apiUrlTags}/${id}`, {
-      body: {},
+      body: { token },
     });
   }
 }

@@ -6,6 +6,7 @@ const {
   changeUser,
   deleteUser,
 } = require("../controllers/users");
+const { findUserByToken } = require("../validators/user");
 
 const router = Router();
 
@@ -19,9 +20,9 @@ router.get("/:id", getUser);
 router.post("", createUser);
 
 // PUT - Change user
-router.put("/:id", changeUser);
+router.put("/:id", findUserByToken, changeUser);
 
 // DELETE - Delete user
-router.delete("/:id", deleteUser);
+router.delete("/:id", findUserByToken, deleteUser);
 
 module.exports = router;

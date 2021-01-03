@@ -1,183 +1,156 @@
-const { createObjOfSchema, findUserByToken } = require("../functions");
+const { createObjOfSchema, formatErrors } = require("../functions");
 const { sendJSON, sendJSONError } = require("../json_messages");
 const Entries = require("../../../models/Entries");
 const Users = require("../../../models/Users");
 const Tags = require("../../../models/Tags");
 
 const {
-  INCORRECT_ID,
   ENTRY_CREATED,
   ENTRY_CHANGED,
-  TAG_NOT_FOUND,
   TAG_DELETED,
   ENTRY_NOT_FOUND,
-  ENTRY_CANT_DELETED,
-  USER_NOT_FOUND,
-} = require("../../../messages");
-const { ROOT_PRIVELEGES } = require("../../../config/config");
-
-const schemaFields = ["_id", "title", "text", "tagsId"];
-const schemaFieldsOnSave = ["usersId", "tagsId"];
-const showEntriesFields = { __v: 0 };
-const showUserFields = { __v: 0, password: 0 };
-const showTagsField = { __v: 0 };
+} = require("../../../config/messages");
+const {
+  BAD_REQUEST,
+  OK,
+  CREATED,
+  DELETED,
+  CHANGED,
+} = require("../../../config/status");
+const {
+  ALL_ENTRIES,
+  ONE_ENTRY,
+  ONE_USER,
+  ONE_TAG,
+  CHANGE_ENTRY,
+  CREATE_ENTRY,
+} = require("../../../config/fields");
 
 const getAllEntries = async (_, res) => {
-  let isCorrect = true;
-  let entries = await Entries.find({}, showEntriesFields);
+  let entries = await Entries.find({}, ALL_ENTRIES);
 
   for (let i in entries) {
-    let addUser = {};
-    let addTag = {};
-
-    await Users.findById(entries[i].usersId, showUserFields, (err, user) => {
-      if (err) {
-        res.status(400);
-        res.json(sendJSONError(USER_NOT_FOUND));
-        isCorrect = false;
-        return;
-      }
-      addUser = user;
-    });
-
-    await Tags.findById(entries[i].tagsId, showTagsField, (err, tag) => {
-      if (err) {
-        res.status(400);
-        res.json(sendJSONError(TAG_NOT_FOUND));
-        isCorrect = false;
-        return;
-      }
-      addTag = tag;
-    });
-
-    if (isCorrect) {
-      entries[i].usersId = addUser;
-      entries[i].tagsId = addTag;
+    const user = await getUser(entries[i].usersId);
+    if (!user) {
+      continue;
     }
+    const tag = await getTag(entries[i].tagsId);
+    if (!tag) {
+      continue;
+    }
+
+    entries[i].usersId = user;
+    entries[i].tagsId = tag;
   }
 
-  res.status(200);
+  res.status(OK);
   res.json(sendJSON(entries));
 };
 
-const getEntry = async (req, res) => {
+const getEntry = (req, res) => {
   const id = req.params.id;
 
-  Entries.findById(id, showEntriesFields, async (err, entry) => {
-    if (err) {
-      res.status(400);
-      res.json(sendJSONError(INCORRECT_ID));
+  Entries.findById(id, ONE_ENTRY, async (err, entry) => {
+    if (err || !entry) {
+      entryNotFound(res);
       return;
     }
-    if (!entry) {
-      res.status(400);
-      res.json(sendJSONError(ENTRY_NOT_FOUND));
+    const tag = await getTag(entry.tagsId);
+    if (!tag) {
+      entryNotFound(res);
+      return;
+    }
+    const user = await getUser(entry.usersId);
+    if (!user) {
+      entryNotFound(res);
       return;
     }
 
-    await Users.findById(entry.usersId, showEntriesFields, (err, user) => {
-      if (err) {
-        res.status(400);
-        res.json(sendJSONError(USER_NOT_FOUND));
-        entry = false;
-      }
-      entry.usersId = user;
-    });
-    await Tags.findById(entry.tagsId, showEntriesFields, (err, tag) => {
-      if (err) {
-        res.status(400);
-        res.json(sendJSONError(USER_NOT_FOUND));
-        entry = false;
-      }
-      entry.tagsId = tag;
-    });
-
-    if (entry) {
-      res.status(200);
-      res.json(sendJSON(entry));
-    } else {
-      res.json(sendJSONError(ENTRY_NOT_FOUND));
-    }
+    entry.tagsId = tag;
+    entry.usersId = user;
+    res.status(OK);
+    res.json(sendJSON(entry));
   });
 };
 
 const createEntry = async (req, res) => {
-  const user = await findUserByToken(req.body?.usersId, res);
-  if (!user) {
-    return;
-  }
+  const user = req.next?.user;
 
-  const newEntry = createObjOfSchema(
-    [...schemaFields, ...schemaFieldsOnSave],
-    req
-  );
+  const newEntry = createObjOfSchema(CREATE_ENTRY, req);
   newEntry.usersId = user._id;
-
   const entry = new Entries(newEntry);
 
   entry.save((err) => {
     if (err) {
-      res.status(400);
-      const errors = err.errors;
-      const errorsFormatted = {};
-      for (let key in errors) {
-        errorsFormatted[key] = errors[key]?.kind;
-      }
+      formatErrors(err);
+      res.status(BAD_REQUEST);
       res.json(sendJSONError(errorsFormatted));
       return;
     }
-    res.status(201);
+    res.status(CREATED);
     res.json(sendJSON(ENTRY_CREATED));
   });
 };
 
 const changeEntry = async (req, res) => {
-  const user = await findUserByToken(req.body?.token, res);
-  if (!user) {
-    return;
-  }
-
-  const updateEntry = createObjOfSchema(schemaFields, req);
+  const updateEntry = createObjOfSchema(CHANGE_ENTRY, req);
 
   Entries.findByIdAndUpdate(
     updateEntry._id,
     { $set: updateEntry },
     (err, entry) => {
-      if (err) {
+      if (err || !entry) {
+        res.status(BAD_REQUEST);
         res.json(sendJSONError(err));
         return;
       }
+      res.status(CHANGED);
       res.json(sendJSON(ENTRY_CHANGED));
     }
   );
 };
 
 const deleteEntry = async (req, res) => {
-  const user = await findUserByToken(req.body?.token, res);
-  if (!user) {
-    return;
-  }
-
-  if (user.privelages < ROOT_PRIVELEGES) {
-    res.status(400);
-    res.json(sendJSONError(ENTRY_CANT_DELETED));
-    return;
-  }
-
   const id = req.params?.id;
 
   Entries.findByIdAndDelete(id, (err, entry) => {
-    if (err) {
+    if (err || !entry) {
+      res.status(BAD_REQUEST);
       res.json(sendJSONError(err));
       return;
     }
-    if (!entry) {
-      res.json(sendJSONError(TAG_NOT_FOUND));
-      return;
-    }
+    res.status(DELETED);
     res.json(sendJSON(TAG_DELETED));
   });
 };
+
+function getUser(id) {
+  return new Promise((res, rej) => {
+    Users.findById(id, ONE_USER, (err, user) => {
+      if (err) {
+        rej(err);
+        return;
+      }
+      res(user);
+    });
+  });
+}
+
+async function getTag(id) {
+  let resTag;
+  await Tags.findById(id, ONE_TAG, (err, tag) => {
+    if (err) {
+      return;
+    }
+    resTag = tag;
+  });
+  return resTag;
+}
+
+function entryNotFound(res) {
+  res.status(BAD_REQUEST);
+  res.json(sendJSONError(ENTRY_NOT_FOUND));
+}
 
 module.exports = {
   getAllEntries,

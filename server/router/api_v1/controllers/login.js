@@ -9,47 +9,49 @@ const {
   USER_NOT_FOUND,
   SIGN_IN,
   LOGIN_REQUIRED,
-} = require("../../../messages");
-const { getJWT, validateAuthorized } = require("../authorization");
-const loginKeys = ["username", "password"];
+} = require("../../../config/messages");
+const { getJWT } = require("../validators/user");
+const { BAD_REQUEST, OK } = require("../../../config/status");
+const { LOGIN, ONE_USER } = require("../../../config/fields");
 
-const createUser = async (req, res) => {
-  const user = createObjOfSchema(loginKeys, req);
+const getUserByToken = async (req, res) => {
+  const userId = req.next?.user._id;
+
+  Users.findById(userId, (err, user) => {
+    if (err || !user) {
+      res.status(BAD_REQUEST);
+      res.json(sendJSONError(USER_NOT_FOUND));
+      return;
+    }
+
+    res.status(OK);
+    res.json(sendJSON(user));
+  });
+};
+
+const loginUser = (req, res) => {
+  const user = createObjOfSchema(LOGIN, req);
 
   if (!(user?.username && user?.password)) {
-    res.status(400);
+    res.status(BAD_REQUEST);
     res.json(sendJSONError(LOGIN_REQUIRED));
     return;
   }
 
   user.password = cryptPassword(user.password);
 
-  const detectedUser = await Users.findOne(user, { _id: 1 });
-  if (!detectedUser) {
-    res.status(400);
-    res.json(sendJSONError(USER_NOT_FOUND));
-    return;
-  }
-  res.json(sendJSONAndToken(SIGN_IN, getJWT(detectedUser._id)));
-};
-
-const getUserByToken = async (req, res) => {
-  const userId = await validateAuthorized(req.params?.token, res);
-  if (!userId) return;
-
-  Users.findById(userId, (err, user) => {
-    if (err) {
-      res.status(400);
+  Users.findOne(user, (err, user) => {
+    if (err || !user) {
+      res.status(BAD_REQUEST);
       res.json(sendJSONError(USER_NOT_FOUND));
       return;
     }
-
-    res.status(200);
-    res.json(sendJSON(user));
+    res.status(OK);
+    res.json(sendJSONAndToken(SIGN_IN, getJWT(user._id)));
   });
 };
 
 module.exports = {
-  createUser,
+  loginUser,
   getUserByToken,
 };
