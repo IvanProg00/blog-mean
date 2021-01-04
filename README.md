@@ -1,14 +1,12 @@
 # Blog MEAN
 
-## Run Project
-
-### Installation
+## Installation
 
 - [Docker](https://www.docker.com/get-started)
 
-### Run commands on terminal
+## Run Project
 
-#### On Mac/Linux
+### On Mac/Linux
 
 ```bash
 # Production
@@ -20,7 +18,7 @@ make prod
 made dev
 ```
 
-#### On Windows
+### On Windows
 
 ```bash
 # Production

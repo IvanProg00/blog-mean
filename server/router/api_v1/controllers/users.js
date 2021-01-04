@@ -2,20 +2,16 @@ const {
   sendJSON,
   sendJSONAndToken,
   sendJSONError,
-} = require("../json_messages");
-const {
-  createObjOfSchema,
-  formatErrors,
-  cryptPassword,
-} = require("../functions");
-const { getJWT } = require("../validators/user");
+} = require("../other/json_messages");
+const { createObjOfSchema, cryptPassword } = require("../other/functions");
 const Users = require("../../../models/Users");
 const {
-  USER_CREATED,
   INCORRECT_ID,
   USER_DELETED,
   USER_CHANGED,
   USER_CANT_DELETED,
+  USER_CANT_CHANGED,
+  USER_CREATED,
 } = require("../../../config/messages");
 const {
   OK,
@@ -56,43 +52,39 @@ const createUser = (req, res) => {
   user.password = cryptPassword(user.password);
 
   user.save((err, user) => {
-    if (err) {
-      err = formatErrors(err);
-      res.status(BAD_REQUEST);
-      res.json(sendJSONError(err));
+    if (err || !user) {
+      res.status(BAD_REQUEST).json(sendJSONError(err));
       return;
     }
-    res.status(CREATED);
-    res.json(sendJSONAndToken(USER_CREATED, getJWT(user._id)));
+    res.status(CREATED).json(sendJSONAndToken(USER_CREATED, getJWT(user._id)));
   });
 };
 
 const changeUser = async (req, res) => {
-  const id = req.next?.user?._id;
-  if (tokenId !== id) {
-    res.status(BAD_REQUEST);
-    res.json(sendJSONError(USER_CANT_DELETED));
+  if (!req.next?.userEqualToken) {
+    res.status(BAD_REQUEST).json(sendJSONError(USER_CANT_CHANGED));
     return;
   }
   const updateUser = createObjOfSchema(CHANGE_USER, req);
 
-  Users.findByIdAndUpdate(id, { $set: updateUser }, (err, user) => {
-    if (err || !user) {
-      res.status(BAD_REQUEST);
-      res.json(sendJSONError(err));
-      return;
+  Users.findByIdAndUpdate(
+    req.next?.user?.id,
+    { $set: updateUser },
+    (err, user) => {
+      if (err || !user) {
+        res.status(BAD_REQUEST);
+        res.json(sendJSONError(err));
+        return;
+      }
+      res.status(CHANGED);
+      res.json(sendJSON(USER_CHANGED));
     }
-    res.status(CHANGED);
-    res.json(sendJSON(USER_CHANGED));
-  });
+  );
 };
 
 const deleteUser = async (req, res) => {
-  const tokenId = req.next?.user?._id.toString();
-  const id = req.params?.id;
-  if (tokenId !== id) {
-    res.status(BAD_REQUEST);
-    res.json(sendJSONError(USER_CANT_DELETED));
+  if (!req.next?.userEqualToken) {
+    res.status(BAD_REQUEST).json(sendJSONError(USER_CANT_DELETED));
     return;
   }
 

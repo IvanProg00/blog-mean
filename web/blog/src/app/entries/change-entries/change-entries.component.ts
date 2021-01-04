@@ -7,7 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { ChangeEntry, Tag, Response } from 'src/app/interfaces';
+import { ChangeEntry, Tag, Response, User } from 'src/app/interfaces';
 import { SnackBarService } from 'src/app/shared/snack-bar/snack-bar.service';
 import { TagsService } from 'src/app/tags/tags.service';
 import { UserService } from 'src/app/user/user.service';
@@ -35,6 +35,7 @@ export class ChangeEntriesComponent implements OnInit {
     text: new FormControl(this.entry.text, [Validators.required]),
     tagsId: new FormControl(this.entry.tagsId._id, [Validators.required]),
   });
+  private user: User;
 
   public allTags: Tag[];
 
@@ -59,12 +60,13 @@ export class ChangeEntriesComponent implements OnInit {
       this.userService.dropToken();
     }
     getUser.subscribe(
-      (_: Response) => {
+      (res: Response) => {
+        this.user = res.data;
         this.setTags();
       },
       (err: HttpErrorResponse) => {
         console.error(err);
-        this._snackBarService.error("We Can't Find This User.");
+        this._snackBarService.error("Your Acount Isn't Activated.");
         this.userService.dropToken();
         this.router.navigate(['/']);
       }
@@ -92,6 +94,11 @@ export class ChangeEntriesComponent implements OnInit {
   private createEntryForm(id: string): void {
     this.entriesService.getEntry(id).subscribe(
       (res: Response) => {
+        if (res.data?.usersId?._id !== this.user._id) {
+          this._snackBarService.error("You Can't Change This Entry.");
+          this.router.navigate(['/']);
+          return;
+        }
         this.entry = res.data;
 
         this._id.setValue(this.entry._id);
@@ -108,29 +115,31 @@ export class ChangeEntriesComponent implements OnInit {
   }
 
   public onSubmit() {
-    this.entriesService.changeEntry(this.entryForm.value).subscribe(
-      (_: Response) => {
-        this._snackBarService.success('Entry Changed.');
-        this.router.navigate(['entries/about', this.entry._id]);
-      },
-      (err: HttpErrorResponse) => {
-        console.error(err);
-        if (err.status === 0) {
-          this._snackBarService.error("Can't Be Changed This Entry.");
-          this.router.navigate(['/entries/about', this._id.value]);
-        } else {
-          if (err.error?.error?.title) {
-            this.title.setErrors({ other: err.error?.error?.title });
-          }
-          if (err.error?.error?.text) {
-            this.text.setErrors({ other: err.error?.error?.text });
-          }
-          if (err.error?.error?.tagsId) {
-            this.tagsId.setErrors({ other: err.error?.error?.password });
+    if (this.entryForm.valid) {
+      this.entriesService.changeEntry(this.entryForm.value).subscribe(
+        (_: Response) => {
+          this._snackBarService.success('Entry Changed.');
+          this.router.navigate(['entries/about', this.entry._id]);
+        },
+        (err: HttpErrorResponse) => {
+          console.error(err);
+          if (err.status === 0) {
+            this._snackBarService.error("Can't Be Changed This Entry.");
+            this.router.navigate(['/entries/about', this._id.value]);
+          } else {
+            if (err.error?.error?.title) {
+              this.title.setErrors({ other: err.error?.error?.title });
+            }
+            if (err.error?.error?.text) {
+              this.text.setErrors({ other: err.error?.error?.text });
+            }
+            if (err.error?.error?.tagsId) {
+              this.tagsId.setErrors({ other: err.error?.error?.password });
+            }
           }
         }
-      }
-    );
+      );
+    }
   }
 
   get _id(): AbstractControl {

@@ -21,6 +21,7 @@
     </mat-card-content>
     <mat-card-actions>
       <button
+        *ngIf="canChange"
         mat-flat-button
         mat-button
         color="primary"
@@ -28,7 +29,13 @@
       >
         CHANGE
       </button>
-      <button mat-flat-button mat-button color="warn" (click)="onDelete()">
+      <button
+        *ngIf="canDelete"
+        mat-flat-button
+        mat-button
+        color="warn"
+        (click)="onDelete()"
+      >
         DELETE
       </button>
     </mat-card-actions>

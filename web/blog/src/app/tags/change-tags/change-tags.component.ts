@@ -77,23 +77,25 @@ export class ChangeTagsComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    this.tagService.changeTag(this.tagForm.value).subscribe(
-      (_: Response) => {
-        this.router.navigate(['/tags']);
-        this._snackBarService.success('Tag Changed.');
-      },
-      (err: HttpErrorResponse) => {
-        console.error(err);
-        if (err.status === 0) {
-          this._snackBarService.error("You can't change this tag");
+    if (this.tagForm.valid) {
+      this.tagService.changeTag(this.tagForm.value).subscribe(
+        (_: Response) => {
           this.router.navigate(['/tags']);
-        } else {
-          if (err?.error?.error?.error?.title) {
-            this.title.setErrors({ title: err?.error?.error?.error?.title });
+          this._snackBarService.success('Tag Changed.');
+        },
+        (err: HttpErrorResponse) => {
+          console.error(err);
+          if (err.status === 0) {
+            this._snackBarService.error("You can't change this tag");
+            this.router.navigate(['/tags']);
+          } else {
+            if (err?.error?.error?.title) {
+              this.title.setErrors({ other: err?.error?.error?.title });
+            }
           }
         }
-      }
-    );
+      );
+    }
   }
 
   get _id(): AbstractControl {

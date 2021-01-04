@@ -8,14 +8,31 @@
       <mat-form-field class="field">
         <mat-label>Username</mat-label>
         <input matInput formControlName="username" name="username" />
-        <mat-error *ngIf="username?.errors?.required">User is required</mat-error>
+        <mat-error *ngIf="username?.errors?.required"
+          >User is required</mat-error
+        >
+        <mat-error *ngIf="username?.errors?.other">{{
+          username?.errors?.other
+        }}</mat-error>
       </mat-form-field>
       <mat-form-field class="field">
         <mat-label>Password</mat-label>
         <input matInput formControlName="password" name="password" />
-        <mat-error *ngIf="password?.errors?.required">Password is required</mat-error>
+        <mat-error *ngIf="password?.errors?.required"
+          >Password is required</mat-error
+        >
+        <mat-error *ngIf="password?.errors?.other">{{
+          password?.errors?.other
+        }}</mat-error>
       </mat-form-field>
-      <button class="submit-btn" color="primary" mat-raised-button type="submit">LOGIN</button>
+      <button
+        class="submit-btn"
+        color="primary"
+        mat-raised-button
+        type="submit"
+      >
+        LOGIN
+      </button>
     </form>
   </mat-card-content>
 </mat-card>

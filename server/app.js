@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const compression = require("compression");
+const path = require("path");
 
 const { PORT } = require("./config/config");
 const mongoose = require("./mongodb");
@@ -26,6 +27,12 @@ function main() {
   app.use(helmet());
 
   app.use("/api/v1", api_v1);
+
+  app.use(express.static(path.resolve(__dirname, "public")));
+
+  app.use((_, res) => {
+    res.sendFile(path.resolve(__dirname, "public", "index.html"));
+  });
 
   app.listen(PORT, () => {
     console.log(`Server is working on ${PORT}...`);

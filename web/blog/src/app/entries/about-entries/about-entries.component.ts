@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Response, Entry } from 'src/app/interfaces';
 import { SnackBarService } from 'src/app/shared/snack-bar/snack-bar.service';
+import { UserService } from 'src/app/user/user.service';
 import { BG_COLOR } from 'src/assets/config';
 import { EntriesService } from '../entries.service';
 
@@ -30,11 +31,14 @@ export class AboutEntriesComponent implements OnInit {
   };
   public isLoaded: boolean = false;
   public isFound: boolean = false;
+  public canChange: boolean = false;
+  public canDelete: boolean = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private entriesService: EntriesService,
     private router: Router,
+    private userService: UserService,
     private _snackBarService: SnackBarService
   ) {}
 
@@ -42,6 +46,21 @@ export class AboutEntriesComponent implements OnInit {
     this.activatedRoute.params.subscribe((params: Params) => {
       this.loadEntry(params.id);
     });
+    const getUser = this.userService.getUserByToken();
+    if (!getUser) {
+      return;
+    }
+    getUser.subscribe(
+      (_: Response) => {
+        this.canChange = true;
+        this.canDelete = true;
+      },
+      (err: HttpErrorResponse) => {
+        console.error(err);
+        this._snackBarService.error("Can't Load Your Account.");
+        this.userService.dropToken();
+      }
+    );
   }
 
   private loadEntry(id: string): void {

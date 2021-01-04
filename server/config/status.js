@@ -7,6 +7,7 @@ module.exports = {
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
   NO_PERMISSIONS: 403,
+  NOT_FOUND: 404,
 
   SERVER_ERROR: 500,
 };

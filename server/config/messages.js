@@ -6,6 +6,7 @@ module.exports = {
   USER_DELETED: "User Deleted",
   USER_CHANGED: "User Changed",
   USER_CANT_DELETED: "User can't be deleted.",
+  USER_CANT_CHANGED: "User can't be changed.",
 
   TAG_CREATED: "Created",
   TAG_NOT_FOUND: "Tag Not Found",
@@ -18,6 +19,7 @@ module.exports = {
   ENTRY_DELETED: "Tag Deleted",
   ENTRY_CHANGED: "Entry Changed",
   ENTRY_CANT_DELETED: "You can't delete this entry",
+  ENTRY_CANT_CHANGED: "You can't change this entry",
 
   SIGN_IN: "Logined",
 
@@ -26,7 +28,8 @@ module.exports = {
 
   NO_PRIVELEGES: "You don't have priveleges to make it.",
 
-  LOGIN_REQUIRED: "Username and Password are required",
+  LOGIN_REQUIRED: "Username or Password is incorrect.",
+
 
   UNIQUE_VALUES: {
     username: "Username is unique"

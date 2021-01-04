@@ -54,7 +54,18 @@ export class LoginComponent implements OnInit {
             this._snackBarService.error("You Can't Login At The Moment.");
             this.router.navigate(['/']);
           } else {
-            this.error = err.error?.error;
+            let otherError: boolean = true;
+            if (err.error?.error?.username) {
+              this.username.setErrors({ other: err.error?.error?.username });
+              otherError = false;
+            }
+            if (err.error?.error?.password) {
+              this.password.setErrors({ other: err.error?.error?.password });
+              otherError = false;
+            }
+            if (err.error?.error?.other && otherError) {
+              this.error = err.error?.error?.other;
+            }
           }
         }
       );

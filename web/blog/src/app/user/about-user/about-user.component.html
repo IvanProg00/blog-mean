@@ -1,6 +1,6 @@
 <app-loading *ngIf="!isLoaded; else loaded"></app-loading>
 <ng-template #loaded>
-  <mat-card *ngIf="isRegistred; else notFound" class="card">
+  <mat-card *ngIf="userFound; else notFound" class="card">
     <mat-card-header>
       <mat-card-title>{{ user.username }}</mat-card-title>
     </mat-card-header>
@@ -30,6 +30,6 @@
     </mat-card-actions>
   </mat-card>
   <ng-template #notFound>
-    <h2 class="err-mess big-letters">Entry not found</h2>
+    <h2 class="err-mess big-letters">User Not Found</h2>
   </ng-template>
 </ng-template>

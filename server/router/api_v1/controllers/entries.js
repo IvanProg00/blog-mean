@@ -1,5 +1,5 @@
-const { createObjOfSchema, formatErrors } = require("../functions");
-const { sendJSON, sendJSONError } = require("../json_messages");
+const { createObjOfSchema, formatErrors } = require("../other/functions");
+const { sendJSON, sendJSONError } = require("../other/json_messages");
 const Entries = require("../../../models/Entries");
 const Users = require("../../../models/Users");
 const Tags = require("../../../models/Tags");
@@ -7,8 +7,9 @@ const Tags = require("../../../models/Tags");
 const {
   ENTRY_CREATED,
   ENTRY_CHANGED,
-  TAG_DELETED,
   ENTRY_NOT_FOUND,
+  ENTRY_DELETED,
+  ENTRY_CANT_CHANGED,
 } = require("../../../config/messages");
 const {
   BAD_REQUEST,
@@ -75,16 +76,14 @@ const getEntry = (req, res) => {
 
 const createEntry = async (req, res) => {
   const user = req.next?.user;
-
   const newEntry = createObjOfSchema(CREATE_ENTRY, req);
   newEntry.usersId = user._id;
   const entry = new Entries(newEntry);
 
   entry.save((err) => {
     if (err) {
-      formatErrors(err);
       res.status(BAD_REQUEST);
-      res.json(sendJSONError(errorsFormatted));
+      res.json(sendJSONError(err));
       return;
     }
     res.status(CREATED);
@@ -93,19 +92,21 @@ const createEntry = async (req, res) => {
 };
 
 const changeEntry = async (req, res) => {
-  const updateEntry = createObjOfSchema(CHANGE_ENTRY, req);
+  if (!req.next?.userEqualToken) {
+    res.status(BAD_REQUEST).json(sendJSONError(ENTRY_CANT_CHANGED));
+    return;
+  }
 
+  const updateEntry = createObjOfSchema(CHANGE_ENTRY, req);
   Entries.findByIdAndUpdate(
     updateEntry._id,
     { $set: updateEntry },
     (err, entry) => {
       if (err || !entry) {
-        res.status(BAD_REQUEST);
-        res.json(sendJSONError(err));
+        res.status(BAD_REQUEST).json(sendJSONError(err));
         return;
       }
-      res.status(CHANGED);
-      res.json(sendJSON(ENTRY_CHANGED));
+      res.status(CHANGED).json(sendJSON(ENTRY_CHANGED));
     }
   );
 };
@@ -120,26 +121,25 @@ const deleteEntry = async (req, res) => {
       return;
     }
     res.status(DELETED);
-    res.json(sendJSON(TAG_DELETED));
+    res.json(sendJSON(ENTRY_DELETED));
   });
 };
 
-function getUser(id) {
-  return new Promise((res, rej) => {
-    Users.findById(id, ONE_USER, (err, user) => {
-      if (err) {
-        rej(err);
-        return;
-      }
-      res(user);
-    });
+async function getUser(id) {
+  let resUser;
+  await Users.findById(id, ONE_USER, (err, user) => {
+    if (err || !user) {
+      return;
+    }
+    resUser = user;
   });
+  return resUser;
 }
 
 async function getTag(id) {
   let resTag;
   await Tags.findById(id, ONE_TAG, (err, tag) => {
-    if (err) {
+    if (err || !tag) {
       return;
     }
     resTag = tag;

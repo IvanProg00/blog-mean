@@ -7,7 +7,7 @@ module.exports = {
   ALL_USERS: { __v: 0, password: 0 },
   ONE_USER: { __v: 0, password: 0 },
   CREATE_USER: ["username", "password", "email"],
-  CHANGE_USER: ["username", "password", "email"],
+  CHANGE_USER: ["username", "email"],
 
   ALL_TAGS: { __v: 0 },
   ONE_TAG: { __v: 0 },

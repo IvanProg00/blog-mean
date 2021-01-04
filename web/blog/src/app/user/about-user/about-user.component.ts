@@ -19,7 +19,7 @@ export class AboutUserComponent implements OnInit {
     privelages: null,
     username: '',
   };
-  public isRegistred: boolean = false;
+  public userFound: boolean = false;
   public isLoaded: boolean = false;
   public canDelete: boolean = false;
   public canChange: boolean = false;
@@ -32,12 +32,6 @@ export class AboutUserComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (!this.userService.getRegistred()) {
-      this._snackBarService.error('You are not Logined.');
-      this.router.navigate(['/']);
-      return;
-    }
-    this.isRegistred = true;
     this.activatedRoute.params.subscribe((params: Params) => {
       this.setUser(params.id);
     });
@@ -47,13 +41,33 @@ export class AboutUserComponent implements OnInit {
     this.userService.getUserById(id).subscribe(
       (res: Response) => {
         this.user = res.data;
-        this.isLoaded = true;
-        this.userValidation(id);
+        const getUser = this.userService.getUserByToken();
+        if (!getUser) {
+          this.isLoaded = true;
+          this.userFound = true;
+          return;
+        }
+        getUser.subscribe(
+          (res: Response) => {
+            console.log(res.data)
+            if (this.user._id === res.data._id) {
+              this.canChange = true;
+              this.canDelete = true;
+            }
+            this.userFound = true;
+            this.isLoaded = true;
+          },
+          (err: HttpErrorResponse) => {
+            console.error(err);
+            this._snackBarService.error("We Can't Load Your Account.");
+            this.userService.dropToken();
+          }
+        );
       },
       (err: HttpErrorResponse) => {
         console.error(err);
         this._snackBarService.error('User Not Found.');
-        this.router.navigate(['/']);
+        this.isLoaded = true;
       }
     );
   }
@@ -73,10 +87,6 @@ export class AboutUserComponent implements OnInit {
           this.userService.dropToken();
         }
       );
-    }
-    if (this.user._id === id) {
-      this.canChange = true;
-      this.canDelete = true;
     }
   }
 

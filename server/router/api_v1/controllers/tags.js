@@ -1,5 +1,5 @@
-const { sendJSON, sendJSONError } = require("../json_messages");
-const { createObjOfSchema, formatErrors } = require("../functions");
+const { sendJSON, sendJSONError } = require("../other/json_messages");
+const { createObjOfSchema, formatErrors } = require("../other/functions");
 const Tags = require("../../../models/Tags");
 const {
   INCORRECT_ID,
