@@ -26,7 +26,7 @@ module.exports = {
   TOKEN_NOT_FOUND: "Token not found",
   TOKEN_INCORRECT: "Token is incorrect",
 
-  NO_PRIVELEGES: "You don't have priveleges to make it.",
+  NO_PRIVILEGES: "You don't have privileges to make it.",
 
   LOGIN_REQUIRED: "Username or Password is incorrect.",
 

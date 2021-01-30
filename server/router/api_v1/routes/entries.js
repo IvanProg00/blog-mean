@@ -7,7 +7,7 @@ const {
   deleteEntry,
 } = require("../controllers/entries");
 const { findUserByToken, validateEntryUserEqualToken } = require("../other/user");
-const { isRoot } = require("../other/priveleges");
+const { isRoot } = require("../other/privileges");
 const validateEntry = require("../validators/entries");
 const errorsValidation = require("../validators/errors_validation");
 

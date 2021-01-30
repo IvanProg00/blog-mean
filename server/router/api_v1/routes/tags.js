@@ -6,7 +6,7 @@ const {
   changeTag,
   deleteTag,
 } = require("../controllers/tags");
-const { isRoot } = require("../other/priveleges");
+const { isRoot } = require("../other/privileges");
 const { findUserByToken } = require("../other/user");
 const validateTag = require("../validators/tags");
 const errorsValidation = require("../validators/errors_validation");

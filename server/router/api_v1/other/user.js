@@ -15,7 +15,7 @@ module.exports = {
   async findUserByToken(req, res, next) {
     const token = req.body?.token;
     if (!token) {
-      res.status(400);
+      res.status(BAD_REQUEST);
       res.json(sendJSONError(TOKEN_NOT_FOUND));
       return;
     }
@@ -23,14 +23,14 @@ module.exports = {
     try {
       id = jwt.verify(token, JWT_KEY)?.userId;
     } catch (err) {
-      res.status(400);
+      res.status(BAD_REQUEST);
       res.json(sendJSONError(TOKEN_INCORRECT));
       return;
     }
     const user = await Users.findById(id);
 
     if (!user) {
-      res.status(400);
+      res.status(BAD_REQUEST);
       res.json(sendJSONError(USER_NOT_FOUND));
       return;
     }
@@ -66,10 +66,3 @@ module.exports = {
     });
   },
 };
-
-function validateId(tokenId, id) {
-  if (tokenId === id) {
-    return true;
-  }
-  return false;
-}

@@ -30,13 +30,21 @@ const {
 const getAllEntries = async (_, res) => {
   let entries = await Entries.find({}, ALL_ENTRIES);
 
-  for (let i in entries) {
-    const user = await getUser(entries[i].usersId);
+  for (let i = entries.length - 1; i >= 0; i--) {
+    let entryHasInfo = false;
+
+    const user = await getUser(entries[i]?.usersId);
     if (!user) {
-      continue;
+      entryHasInfo = true;
     }
-    const tag = await getTag(entries[i].tagsId);
-    if (!tag) {
+    const tag = await getTag(entries[i]?.tagsId);
+    if (!tag && !entryHasInfo) {
+      entryHasInfo = true;
+    }
+
+    if (entryHasInfo) {
+      dropEntry(entries[i]._id);
+      entries = [...entries.slice(0, i), ...entries.slice(i + 1)];
       continue;
     }
 
@@ -59,11 +67,14 @@ const getEntry = (req, res) => {
     const tag = await getTag(entry.tagsId);
     if (!tag) {
       entryNotFound(res);
+      dropEntry(entry);
       return;
     }
     const user = await getUser(entry.usersId);
     if (!user) {
       entryNotFound(res);
+      // dropEntry(id);
+      dropEntry(entry);
       return;
     }
 
@@ -127,29 +138,30 @@ const deleteEntry = async (req, res) => {
 
 async function getUser(id) {
   let resUser;
-  await Users.findById(id, ONE_USER, (err, user) => {
-    if (err || !user) {
-      return;
-    }
-    resUser = user;
-  });
+  resUser = await Users.findById(id, ONE_USER);
   return resUser;
 }
 
 async function getTag(id) {
   let resTag;
-  await Tags.findById(id, ONE_TAG, (err, tag) => {
-    if (err || !tag) {
-      return;
-    }
-    resTag = tag;
-  });
+  resTag = await Tags.findById(id, ONE_TAG);
   return resTag;
 }
 
 function entryNotFound(res) {
   res.status(BAD_REQUEST);
   res.json(sendJSONError(ENTRY_NOT_FOUND));
+}
+
+function dropEntry(entryId) {
+  Entries.findByIdAndDelete(entryId, (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    console.log(`Entry with id ${entryId} deleted.`);
+  });
 }
 
 module.exports = {
